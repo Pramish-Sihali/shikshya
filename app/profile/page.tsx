@@ -306,7 +306,7 @@ export default function ProfilePage() {
                           <div className="text-gray-500">{course?.title}</div>
                         </div>
                         <div className="text-xs text-gray-400">
-                          {new Date(item.completedAt).toLocaleDateString()}
+                          {item.completedAt ? new Date(item.completedAt).toLocaleDateString() : 'N/A'}
                         </div>
                       </div>
                     );
