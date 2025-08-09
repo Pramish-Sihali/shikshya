@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, use } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
@@ -11,7 +11,8 @@ import XPGainAnimation from '@/components/XPGainAnimation';
 import { Course, Module, Progress } from '@/lib/types';
 import { GamificationResult } from '@/lib/gamification';
 
-export default function ModulePage({ params }: { params: { id: string; moduleId: string } }) {
+export default function ModulePage({ params }: { params: Promise<{ id: string; moduleId: string }> }) {
+  const { id, moduleId } = use(params);
   const { data: session, status } = useSession();
   const router = useRouter();
   const [course, setCourse] = useState<Course | null>(null);
@@ -31,17 +32,17 @@ export default function ModulePage({ params }: { params: { id: string; moduleId:
     if (status === 'authenticated') {
       fetchModuleData();
     }
-  }, [status, params.id, params.moduleId, router]);
+  }, [status, id, moduleId, router]);
 
   const fetchModuleData = async () => {
     try {
       // Fetch course
-      const courseResponse = await fetch(`/api/courses/${params.id}`);
+      const courseResponse = await fetch(`/api/courses/${id}`);
       const courseData = await courseResponse.json();
       setCourse(courseData);
 
       // Find module
-      const moduleData = courseData.modules.find((m: Module) => m.id === params.moduleId);
+      const moduleData = courseData.modules.find((m: Module) => m.id === moduleId);
       if (!moduleData) {
         throw new Error('Module not found');
       }
@@ -52,14 +53,14 @@ export default function ModulePage({ params }: { params: { id: string; moduleId:
         const progressResponse = await fetch(`/api/user/progress?userId=${session.user.id}`);
         const progressData = await progressResponse.json();
         const moduleProgress = progressData.progress.find(
-          (p: Progress) => p.courseId === params.id && p.moduleId === params.moduleId
+          (p: Progress) => p.courseId === id && p.moduleId === moduleId
         );
         setProgress(moduleProgress || null);
         setTimeSpent(moduleProgress?.timeSpentSeconds || 0);
       }
     } catch (error) {
       console.error('Failed to fetch module data:', error);
-      router.push(`/courses/${params.id}`);
+      router.push(`/courses/${id}`);
     } finally {
       setLoading(false);
     }
@@ -69,14 +70,14 @@ export default function ModulePage({ params }: { params: { id: string; moduleId:
     if (!session?.user?.id) return;
 
     try {
-      const response = await fetch(`/api/progress/${params.moduleId}`, {
+      const response = await fetch(`/api/progress/${moduleId}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           userId: session.user.id,
-          courseId: params.id,
+          courseId: id,
           timeSpentSeconds: timeSpent,
           completed,
           ...(score !== undefined && { score })
@@ -113,8 +114,8 @@ export default function ModulePage({ params }: { params: { id: string; moduleId:
         },
         body: JSON.stringify({
           userId: session?.user?.id,
-          courseId: params.id,
-          moduleId: params.moduleId,
+          courseId: id,
+          moduleId: moduleId,
           answers,
           timeSpent: timeSpent + quizTimeSpent
         }),
@@ -147,13 +148,13 @@ export default function ModulePage({ params }: { params: { id: string; moduleId:
   const getNextModuleUrl = () => {
     if (!course) return null;
     
-    const currentIndex = course.modules.findIndex(m => m.id === params.moduleId);
+    const currentIndex = course.modules.findIndex(m => m.id === moduleId);
     if (currentIndex < course.modules.length - 1) {
       const nextModule = course.modules[currentIndex + 1];
-      return `/courses/${params.id}/modules/${nextModule.id}`;
+      return `/courses/${id}/modules/${nextModule.id}`;
     }
     
-    return `/courses/${params.id}`;
+    return `/courses/${id}`;
   };
 
   const renderModuleContent = () => {
@@ -238,7 +239,7 @@ export default function ModulePage({ params }: { params: { id: string; moduleId:
           <div className="flex items-center justify-between mb-4">
             <div>
               <Link 
-                href={`/courses/${params.id}`} 
+                href={`/courses/${id}`} 
                 className="text-sm text-gray-500 hover:text-primary mb-2 inline-block"
               >
                 ← Back to {course.title}

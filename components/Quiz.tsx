@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Quiz as QuizType, QuizQuestion } from '@/lib/types';
+import { Quiz as QuizType } from '@/lib/types';
 
 interface QuizProps {
   quiz: QuizType;

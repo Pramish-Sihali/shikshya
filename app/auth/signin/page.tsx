@@ -31,7 +31,7 @@ export default function SignIn() {
         await getSession();
         router.push('/dashboard');
       }
-    } catch (error) {
+    } catch {
       setError('An error occurred. Please try again.');
     }
 
@@ -57,7 +57,7 @@ export default function SignIn() {
         await getSession();
         router.push('/dashboard');
       }
-    } catch (error) {
+    } catch {
       setError('An error occurred. Please try again.');
     }
 

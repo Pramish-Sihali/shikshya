@@ -4,9 +4,10 @@ import { GamificationEngine } from '@/lib/gamification';
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { moduleId: string } }
+  { params }: { params: Promise<{ moduleId: string }> }
 ) {
   try {
+    const { moduleId } = await params;
     const body = await request.json();
     const { userId, courseId, timeSpentSeconds, completed } = body;
 
@@ -18,7 +19,7 @@ export async function PATCH(
     }
 
     // Update progress
-    const progress = updateProgress(userId, courseId, params.moduleId, {
+    const progress = updateProgress(userId, courseId, moduleId, {
       timeSpentSeconds,
       completed,
       ...(completed && { completedAt: new Date().toISOString() })
@@ -30,7 +31,7 @@ export async function PATCH(
     if (completed && !progress.completed) {
       // Get module type to determine XP reward
       const course = getCourseById(courseId);
-      const foundModule = course?.modules.find(m => m.id === params.moduleId);
+      const foundModule = course?.modules.find(m => m.id === moduleId);
       
       let activity: keyof typeof GamificationEngine['XP_REWARDS'] = 'MODULE_COMPLETED';
       

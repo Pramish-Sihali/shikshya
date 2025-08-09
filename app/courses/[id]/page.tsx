@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, use } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
@@ -8,7 +8,8 @@ import Header from '@/components/Header';
 import ProgressBar from '@/components/ProgressBar';
 import { Course, Progress, Module } from '@/lib/types';
 
-export default function CoursePage({ params }: { params: { id: string } }) {
+export default function CoursePage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = use(params);
   const { data: session, status } = useSession();
   const router = useRouter();
   const [course, setCourse] = useState<Course | null>(null);
@@ -24,12 +25,12 @@ export default function CoursePage({ params }: { params: { id: string } }) {
     if (status === 'authenticated') {
       fetchCourseData();
     }
-  }, [status, params.id, router]);
+  }, [status, id, router]);
 
   const fetchCourseData = async () => {
     try {
       // Fetch course details
-      const courseResponse = await fetch(`/api/courses/${params.id}`);
+      const courseResponse = await fetch(`/api/courses/${id}`);
       if (!courseResponse.ok) {
         throw new Error('Course not found');
       }
@@ -40,7 +41,7 @@ export default function CoursePage({ params }: { params: { id: string } }) {
       if (session?.user?.id) {
         const progressResponse = await fetch(`/api/user/progress?userId=${session.user.id}`);
         const progressData = await progressResponse.json();
-        setProgress(progressData.progress.filter((p: Progress) => p.courseId === params.id));
+        setProgress(progressData.progress.filter((p: Progress) => p.courseId === id));
       }
     } catch (error) {
       console.error('Failed to fetch course data:', error);

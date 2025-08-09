@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Header from '@/components/Header';
 import XPGainAnimation from '@/components/XPGainAnimation';
-import { Roadmap, RoadmapStep, Course } from '@/lib/types';
+import { Roadmap, Course } from '@/lib/types';
 import { GamificationResult } from '@/lib/gamification';
 
 interface EnhancedRoadmap extends Roadmap {
