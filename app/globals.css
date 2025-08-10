@@ -46,6 +46,32 @@ body {
   font-family: var(--font-nunito), -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
+/* Ensure proper text colors */
+.text-gray-900 {
+  @apply !text-gray-900;
+}
+
+.text-gray-800 {
+  @apply !text-gray-800;
+}
+
+.text-gray-700 {
+  @apply !text-gray-700;
+}
+
+.text-gray-600 {
+  @apply !text-gray-600;
+}
+
+.text-gray-500 {
+  @apply !text-gray-500;
+}
+
+/* Loading states should be visible */
+.loading-text {
+  @apply text-gray-900;
+}
+
 /* Utility classes */
 .btn-primary {
   @apply bg-primary text-white px-6 py-3 rounded-lg hover:bg-primary-dark transition-colors font-medium;

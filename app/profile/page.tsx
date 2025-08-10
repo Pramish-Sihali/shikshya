@@ -14,7 +14,7 @@ interface ProfileData {
 
 export default function ProfilePage() {
   // For demo purposes, use mock session
-  const session = { user: { name: 'Demo User', id: 'demo-1' } }; const status = 'authenticated';
+  const session = { user: { name: 'Demo User', id: '1' } }; const status = 'authenticated';
   const router = useRouter();
   const [profileData, setProfileData] = useState<ProfileData | null>(null);
   const [enrolledCourses, setEnrolledCourses] = useState<Course[]>([]);
@@ -134,8 +134,8 @@ export default function ProfilePage() {
               {/* User Info */}
               <div>
                 <h1 className="text-2xl font-bold text-primary mb-1">{user.name}</h1>
-                <p className="text-gray-600 mb-2">{user.email}</p>
-                <div className="flex items-center space-x-4 text-sm text-gray-500">
+                <p className="text-gray-900 mb-2">{user.email}</p>
+                <div className="flex items-center space-x-4 text-sm text-gray-900">
                   <span>Member since {new Date(user.createdAt).toLocaleDateString()}</span>
                   <span>•</span>
                   <span>Level {user.level}</span>
@@ -146,7 +146,7 @@ export default function ProfilePage() {
             {/* Level Progress */}
             <div className="text-right">
               <div className="text-2xl font-bold text-accent mb-1">{user.xp} XP</div>
-              <div className="text-sm text-gray-500 mb-2">
+              <div className="text-sm text-gray-900 mb-2">
                 {getXpForNextLevel()} XP to Level {user.level + 1}
               </div>
               <div className="w-32">
@@ -169,19 +169,19 @@ export default function ProfilePage() {
               <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
                 <div className="text-center">
                   <div className="text-2xl font-bold text-primary mb-1">{user.xp}</div>
-                  <div className="text-sm text-gray-500">Total XP</div>
+                  <div className="text-sm text-gray-900">Total XP</div>
                 </div>
                 <div className="text-center">
                   <div className="text-2xl font-bold text-primary mb-1">{user.level}</div>
-                  <div className="text-sm text-gray-500">Current Level</div>
+                  <div className="text-sm text-gray-900">Current Level</div>
                 </div>
                 <div className="text-center">
                   <div className="text-2xl font-bold text-orange-500 mb-1">{user.streak.currentStreak}</div>
-                  <div className="text-sm text-gray-500">Day Streak</div>
+                  <div className="text-sm text-gray-900">Day Streak</div>
                 </div>
                 <div className="text-center">
                   <div className="text-2xl font-bold text-primary mb-1">{formatTime(getTotalTimeSpent())}</div>
-                  <div className="text-sm text-gray-500">Time Spent</div>
+                  <div className="text-sm text-gray-900">Time Spent</div>
                 </div>
               </div>
             </div>
@@ -196,8 +196,8 @@ export default function ProfilePage() {
                       <div className="text-2xl">{badge.icon}</div>
                       <div>
                         <div className="font-medium text-gray-900">{badge.name}</div>
-                        <div className="text-sm text-gray-500">{badge.description}</div>
-                        <div className="text-xs text-gray-400 mt-1">
+                        <div className="text-sm text-gray-900">{badge.description}</div>
+                        <div className="text-xs text-gray-700 mt-1">
                           Earned {new Date(badge.unlockedAt).toLocaleDateString()}
                         </div>
                       </div>
@@ -207,8 +207,8 @@ export default function ProfilePage() {
               ) : (
                 <div className="text-center py-8">
                   <div className="text-4xl mb-4">🏆</div>
-                  <p className="text-gray-500">No badges earned yet</p>
-                  <p className="text-sm text-gray-400 mt-1">Complete courses and games to earn your first badge!</p>
+                  <p className="text-gray-900">No badges earned yet</p>
+                  <p className="text-sm text-gray-700 mt-1">Complete courses and games to earn your first badge!</p>
                 </div>
               )}
             </div>
@@ -225,11 +225,11 @@ export default function ProfilePage() {
                         <div className="flex justify-between items-start mb-3">
                           <div>
                             <h3 className="font-semibold text-gray-900">{course.title}</h3>
-                            <p className="text-sm text-gray-600">{course.description}</p>
+                            <p className="text-sm text-gray-900">{course.description}</p>
                           </div>
                           <div className="text-right text-sm">
                             <div className="font-bold text-primary">{courseProgress.percentage}%</div>
-                            <div className="text-gray-500">
+                            <div className="text-gray-900">
                               {courseProgress.completed}/{courseProgress.total}
                             </div>
                           </div>
@@ -246,7 +246,7 @@ export default function ProfilePage() {
               ) : (
                 <div className="text-center py-8">
                   <div className="text-4xl mb-4">📚</div>
-                  <p className="text-gray-500">No courses enrolled</p>
+                  <p className="text-gray-900">No courses enrolled</p>
                 </div>
               )}
             </div>
@@ -270,16 +270,16 @@ export default function ProfilePage() {
                       </div>
                     ))}
                   </div>
-                  <p className="text-xs text-gray-500">Last 3 weeks of activity</p>
+                  <p className="text-xs text-gray-900">Last 3 weeks of activity</p>
                   <div className="mt-3 text-center">
                     <div className="text-lg font-bold text-orange-500">{user.streak.currentStreak} days</div>
-                    <div className="text-sm text-gray-500">Current streak</div>
+                    <div className="text-sm text-gray-900">Current streak</div>
                   </div>
                 </div>
               ) : (
                 <div className="text-center py-6">
                   <div className="text-3xl mb-2">🔥</div>
-                  <p className="text-gray-500 text-sm">Start your learning streak!</p>
+                  <p className="text-gray-900 text-sm">Start your learning streak!</p>
                 </div>
               )}
             </div>
@@ -303,9 +303,9 @@ export default function ProfilePage() {
                         </div>
                         <div className="flex-1">
                           <div className="font-medium">{moduleItem?.title}</div>
-                          <div className="text-gray-500">{course?.title}</div>
+                          <div className="text-gray-900">{course?.title}</div>
                         </div>
-                        <div className="text-xs text-gray-400">
+                        <div className="text-xs text-gray-700">
                           {item.completedAt ? new Date(item.completedAt).toLocaleDateString() : 'N/A'}
                         </div>
                       </div>
@@ -314,7 +314,7 @@ export default function ProfilePage() {
                 </div>
               ) : (
                 <div className="text-center py-6">
-                  <p className="text-gray-500 text-sm">No recent activity</p>
+                  <p className="text-gray-900 text-sm">No recent activity</p>
                 </div>
               )}
             </div>
@@ -324,20 +324,20 @@ export default function ProfilePage() {
               <h2 className="text-lg font-bold text-primary mb-4">Progress Summary</h2>
               <div className="space-y-3">
                 <div className="flex justify-between">
-                  <span className="text-gray-600">Modules Completed</span>
-                  <span className="font-medium">{getCompletedModulesCount()}/{getTotalModulesCount()}</span>
+                  <span className="text-gray-900">Modules Completed</span>
+                  <span className="font-medium text-gray-900">{getCompletedModulesCount()}/{getTotalModulesCount()}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-600">Courses Enrolled</span>
-                  <span className="font-medium">{enrolledCourses.length}</span>
+                  <span className="text-gray-900">Courses Enrolled</span>
+                  <span className="font-medium text-gray-900">{enrolledCourses.length}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-600">Total Time</span>
-                  <span className="font-medium">{formatTime(getTotalTimeSpent())}</span>
+                  <span className="text-gray-900">Total Time</span>
+                  <span className="font-medium text-gray-900">{formatTime(getTotalTimeSpent())}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-600">Badges Earned</span>
-                  <span className="font-medium">{user.badges.length}</span>
+                  <span className="text-gray-900">Badges Earned</span>
+                  <span className="font-medium text-gray-900">{user.badges.length}</span>
                 </div>
               </div>
             </div>

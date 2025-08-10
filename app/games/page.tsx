@@ -12,7 +12,7 @@ type GameType = 'menu' | 'flashcards' | 'matching';
 
 export default function GamesPage() {
   // For demo purposes, use mock session
-  const session = { user: { name: 'Demo User', id: 'demo-1' } };
+  const session = { user: { name: 'Demo User', id: '1' } };
   const router = useRouter();
   const [currentGame, setCurrentGame] = useState<GameType>('menu');
   const [gamificationResult, setGamificationResult] = useState<GamificationResult | null>(null);

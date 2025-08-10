@@ -13,7 +13,7 @@ import { GamificationResult } from '@/lib/gamification';
 export default function ModulePage({ params }: { params: Promise<{ id: string; moduleId: string }> }) {
   const { id, moduleId } = use(params);
   // For demo purposes, use mock session
-  const session = { user: { name: 'Demo User', id: 'demo-1' } };
+  const session = { user: { name: 'Demo User', id: '1' } };
   const router = useRouter();
   const [course, setCourse] = useState<Course | null>(null);
   const [module, setModule] = useState<Module | null>(null);

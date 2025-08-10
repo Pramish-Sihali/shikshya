@@ -83,6 +83,26 @@ React is a JavaScript library for building user interfaces. It lets you compose 
         timeEstimateMinutes: 20
       },
       {
+        id: '1-2-game',
+        type: 'game',
+        title: 'Component Building Game',
+        timeEstimateMinutes: 8,
+        game: {
+          id: 'game-1-2-component',
+          type: 'matching',
+          data: {
+            pairs: [
+              { id: 'p1', left: 'function MyComponent()', right: 'Functional component syntax' },
+              { id: 'p2', left: 'props.name', right: 'Accessing component properties' },
+              { id: 'p3', left: 'useState()', right: 'Hook for managing state' },
+              { id: 'p4', left: '<div>Hello</div>', right: 'JSX element syntax' }
+            ]
+          },
+          maxScore: 100,
+          xpReward: 20
+        }
+      },
+      {
         id: '1-3',
         type: 'quiz',
         title: 'React Basics Quiz',
@@ -163,6 +183,26 @@ var city = "New York";
         timeEstimateMinutes: 20
       },
       {
+        id: '2-1-game',
+        type: 'game',
+        title: 'JavaScript Syntax Practice',
+        timeEstimateMinutes: 7,
+        game: {
+          id: 'game-2-1-syntax',
+          type: 'flashcards',
+          data: {
+            cards: [
+              { front: 'let x = 5;', back: 'Declares a variable x with value 5' },
+              { front: 'const PI = 3.14;', back: 'Declares a constant PI' },
+              { front: 'typeof "hello"', back: 'Returns "string"' },
+              { front: 'null vs undefined', back: 'null is intentional, undefined is not set' }
+            ]
+          },
+          maxScore: 100,
+          xpReward: 15
+        }
+      },
+      {
         id: '2-2',
         type: 'quiz',
         title: 'JavaScript Basics Quiz',
@@ -187,6 +227,27 @@ var city = "New York";
           ],
           passingScore: 70,
           xpReward: 30
+        }
+      },
+      {
+        id: '2-3',
+        type: 'game',
+        title: 'JavaScript Code Challenge',
+        timeEstimateMinutes: 12,
+        game: {
+          id: 'game-2-3-challenge',
+          type: 'matching',
+          data: {
+            pairs: [
+              { id: 'p1', left: 'array.push(item)', right: 'Adds item to end of array' },
+              { id: 'p2', left: 'string.length', right: 'Gets number of characters' },
+              { id: 'p3', left: 'if (condition) {}', right: 'Conditional statement' },
+              { id: 'p4', left: 'for (let i = 0; i < 5; i++)', right: 'Loop structure' },
+              { id: 'p5', left: 'function name() {}', right: 'Function declaration' }
+            ]
+          },
+          maxScore: 100,
+          xpReward: 25
         }
       }
     ]
@@ -227,6 +288,26 @@ Ideal for two-dimensional layouts.
 }
 \`\`\``,
         timeEstimateMinutes: 25
+      },
+      {
+        id: '3-1-game',
+        type: 'game',
+        title: 'CSS Layout Flashcards',
+        timeEstimateMinutes: 6,
+        game: {
+          id: 'game-3-1-layout',
+          type: 'flashcards',
+          data: {
+            cards: [
+              { front: 'display: flex', back: 'Creates flexible container' },
+              { front: 'display: grid', back: 'Creates grid container' },
+              { front: 'justify-content: center', back: 'Centers items horizontally' },
+              { front: 'align-items: center', back: 'Centers items vertically' }
+            ]
+          },
+          maxScore: 100,
+          xpReward: 15
+        }
       },
       {
         id: '3-2',
@@ -288,6 +369,26 @@ Essential knowledge for safe and efficient cooking.
         title: 'Basic Knife Skills',
         contentUrl: 'https://www.youtube.com/embed/JMA2SqaDgG8',
         timeEstimateMinutes: 15
+      },
+      {
+        id: '4-2-game',
+        type: 'game',
+        title: 'Kitchen Equipment Quiz',
+        timeEstimateMinutes: 8,
+        game: {
+          id: 'game-4-2-equipment',
+          type: 'flashcards',
+          data: {
+            cards: [
+              { front: "Chef's Knife", back: 'Most important kitchen tool for cutting' },
+              { front: 'Cutting Board', back: 'Surface for safe food preparation' },
+              { front: 'Oven Mitts', back: 'Protect hands from hot surfaces' },
+              { front: 'Measuring Cups', back: 'Ensure accurate ingredient amounts' }
+            ]
+          },
+          maxScore: 100,
+          xpReward: 20
+        }
       },
       {
         id: '4-3',
@@ -377,6 +478,27 @@ Master the fundamentals of calisthenics for strength and mobility.
         title: 'Perfect Push-up Form',
         contentUrl: 'https://www.youtube.com/embed/JyCG_5l3XLk',
         timeEstimateMinutes: 12
+      },
+      {
+        id: '5-2-game',
+        type: 'game',
+        title: 'Exercise Form Matching',
+        timeEstimateMinutes: 10,
+        game: {
+          id: 'game-5-2-form',
+          type: 'matching',
+          data: {
+            pairs: [
+              { id: 'p1', left: 'Push-up', right: 'Targets chest, shoulders, triceps' },
+              { id: 'p2', left: 'Pull-up', right: 'Targets back, biceps' },
+              { id: 'p3', left: 'Squat', right: 'Targets legs, glutes' },
+              { id: 'p4', left: 'Plank', right: 'Targets core muscles' },
+              { id: 'p5', left: 'Dip', right: 'Targets triceps, chest' }
+            ]
+          },
+          maxScore: 100,
+          xpReward: 22
+        }
       },
       {
         id: '5-3',

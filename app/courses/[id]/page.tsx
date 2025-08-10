@@ -10,7 +10,7 @@ import { Course, Progress, Module } from '@/lib/types';
 export default function CoursePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   // For demo purposes, use mock session
-  const session = { user: { name: 'Demo User', id: 'demo-1' } };
+  const session = { user: { name: 'Demo User', id: '1' } };
   const router = useRouter();
   const [course, setCourse] = useState<Course | null>(null);
   const [progress, setProgress] = useState<Progress[]>([]);

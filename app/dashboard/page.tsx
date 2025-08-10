@@ -15,7 +15,7 @@ interface UserData {
 
 export default function Dashboard() {
   // For demo purposes, use mock session and data
-  const session = { user: { name: 'Demo User', email: 'demo@example.com', id: 'demo-1' } };
+  const session = { user: { name: 'Demo User', email: 'demo@example.com', id: '1' } };
   const router = useRouter();
   const [userData, setUserData] = useState<UserData | null>(null);
   const [enrolledCourses, setEnrolledCourses] = useState<Course[]>([]);

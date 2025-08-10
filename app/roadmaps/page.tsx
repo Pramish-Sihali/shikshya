@@ -16,7 +16,7 @@ interface EnhancedRoadmap extends Roadmap {
 
 export default function RoadmapsPage() {
   // For demo purposes, use mock session
-  const session = { user: { name: 'Demo User', id: 'demo-1' } }; const status = 'authenticated';
+  const session = { user: { name: 'Demo User', id: '1' } }; const status = 'authenticated';
   const router = useRouter();
   const [roadmaps, setRoadmaps] = useState<EnhancedRoadmap[]>([]);
   const [courses, setCourses] = useState<Course[]>([]);

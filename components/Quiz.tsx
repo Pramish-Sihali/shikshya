@@ -87,7 +87,7 @@ export default function Quiz({ quiz, onComplete }: QuizProps) {
           <h2 className="text-2xl font-bold text-primary mb-4">
             {passed ? 'Congratulations!' : 'Keep Trying!'}
           </h2>
-          <p className="text-lg text-gray-600 mb-6">
+          <p className="text-lg text-gray-900 mb-6">
             You scored {score}% (needed {quiz.passingScore}% to pass)
           </p>
           
@@ -129,7 +129,7 @@ export default function Quiz({ quiz, onComplete }: QuizProps) {
       {/* Progress Bar */}
       <div className="mb-6">
         <div className="flex justify-between items-center mb-2">
-          <span className="text-sm text-gray-500">
+          <span className="text-sm text-gray-900">
             Question {currentQuestion + 1} of {quiz.questions.length}
           </span>
           <span className="text-sm font-medium text-primary">
@@ -174,8 +174,8 @@ export default function Quiz({ quiz, onComplete }: QuizProps) {
                     </div>
                   )}
                 </div>
-                <span className="font-medium">{String.fromCharCode(65 + index)}.</span>
-                <span className="ml-2">{option}</span>
+                <span className="font-medium text-gray-900">{String.fromCharCode(65 + index)}.</span>
+                <span className="ml-2 text-gray-900">{option}</span>
               </div>
             </button>
           ))}
@@ -184,7 +184,7 @@ export default function Quiz({ quiz, onComplete }: QuizProps) {
 
       {/* Navigation */}
       <div className="flex justify-between">
-        <div className="text-sm text-gray-500">
+        <div className="text-sm text-gray-900">
           Time remaining: {timeLeft}s
         </div>
         <button

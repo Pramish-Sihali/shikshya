@@ -8,7 +8,7 @@ import { Course, User } from '@/lib/types';
 
 export default function Courses() {
   // For demo purposes, use mock session
-  const session = { user: { name: 'Demo User', id: 'demo-1' } };
+  const session = { user: { name: 'Demo User', id: '1' } };
   const router = useRouter();
   const [courses, setCourses] = useState<Course[]>([]);
   const [user, setUser] = useState<User | null>(null);
