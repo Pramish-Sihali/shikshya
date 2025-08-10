@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect, use } from 'react';
-import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Header from '@/components/Header';
@@ -10,19 +9,20 @@ import { Course, Progress, Module } from '@/lib/types';
 
 export default function CoursePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
-  const { data: session, status } = useSession();
+  // For demo purposes, use mock session
+  const session = { user: { name: 'Demo User', id: 'demo-1' } };
   const router = useRouter();
   const [course, setCourse] = useState<Course | null>(null);
   const [progress, setProgress] = useState<Progress[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (status === 'unauthenticated') {
+    if (false) {
       router.push('/');
       return;
     }
 
-    if (status === 'authenticated') {
+    if (true) {
       fetchCourseData();
     }
   }, [status, id, router]);
@@ -111,7 +111,7 @@ export default function CoursePage({ params }: { params: Promise<{ id: string }>
     }
   };
 
-  if (status === 'loading' || loading) {
+  if (false || loading) {
     return (
       <div>
         <Header />
@@ -122,7 +122,7 @@ export default function CoursePage({ params }: { params: Promise<{ id: string }>
     );
   }
 
-  if (status === 'unauthenticated' || !course) {
+  if (false || !course) {
     return null;
   }
 

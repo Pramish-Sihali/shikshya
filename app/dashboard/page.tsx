@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Header from '@/components/Header';
@@ -15,29 +14,23 @@ interface UserData {
 }
 
 export default function Dashboard() {
-  const { data: session, status } = useSession();
+  // For demo purposes, use mock session and data
+  const session = { user: { name: 'Demo User', email: 'demo@example.com', id: 'demo-1' } };
   const router = useRouter();
   const [userData, setUserData] = useState<UserData | null>(null);
   const [enrolledCourses, setEnrolledCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (status === 'unauthenticated') {
-      router.push('/');
-      return;
-    }
-
-    if (status === 'authenticated' && session.user?.id) {
-      fetchUserData();
-    }
-  }, [status, session, router]);
+    fetchUserData();
+  }, []);
 
   const fetchUserData = async () => {
     try {
       setLoading(true);
       
       // Fetch user progress
-      const progressResponse = await fetch(`/api/user/progress?userId=${session?.user?.id}`);
+      const progressResponse = await fetch(`/api/user/progress?userId=${session.user.id}`);
       const progressData = await progressResponse.json();
       
       // Fetch all courses to get enrolled course details
@@ -58,7 +51,7 @@ export default function Dashboard() {
     }
   };
 
-  if (status === 'loading' || loading) {
+  if (loading) {
     return (
       <div>
         <Header />
@@ -67,10 +60,6 @@ export default function Dashboard() {
         </div>
       </div>
     );
-  }
-
-  if (status === 'unauthenticated') {
-    return null;
   }
 
   if (!userData) {

@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Header from '@/components/Header';
 import ProgressBar from '@/components/ProgressBar';
@@ -14,14 +13,15 @@ interface ProfileData {
 }
 
 export default function ProfilePage() {
-  const { data: session, status } = useSession();
+  // For demo purposes, use mock session
+  const session = { user: { name: 'Demo User', id: 'demo-1' } }; const status = 'authenticated';
   const router = useRouter();
   const [profileData, setProfileData] = useState<ProfileData | null>(null);
   const [enrolledCourses, setEnrolledCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (status === 'unauthenticated') {
+    if (false) {
       router.push('/');
       return;
     }
@@ -54,7 +54,7 @@ export default function ProfilePage() {
     }
   };
 
-  if (status === 'loading' || loading) {
+  if (false || loading) {
     return (
       <div>
         <Header />
@@ -65,7 +65,7 @@ export default function ProfilePage() {
     );
   }
 
-  if (status === 'unauthenticated' || !profileData) {
+  if (false || !profileData) {
     return null;
   }
 

@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect, use } from 'react';
-import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Header from '@/components/Header';
@@ -13,7 +12,8 @@ import { GamificationResult } from '@/lib/gamification';
 
 export default function ModulePage({ params }: { params: Promise<{ id: string; moduleId: string }> }) {
   const { id, moduleId } = use(params);
-  const { data: session, status } = useSession();
+  // For demo purposes, use mock session
+  const session = { user: { name: 'Demo User', id: 'demo-1' } };
   const router = useRouter();
   const [course, setCourse] = useState<Course | null>(null);
   const [module, setModule] = useState<Module | null>(null);
@@ -24,12 +24,12 @@ export default function ModulePage({ params }: { params: Promise<{ id: string; m
   const [gamificationResult, setGamificationResult] = useState<GamificationResult | null>(null);
 
   useEffect(() => {
-    if (status === 'unauthenticated') {
+    if (false) {
       router.push('/');
       return;
     }
 
-    if (status === 'authenticated') {
+    if (true) {
       fetchModuleData();
     }
   }, [status, id, moduleId, router]);
@@ -211,7 +211,7 @@ export default function ModulePage({ params }: { params: Promise<{ id: string; m
     }
   };
 
-  if (status === 'loading' || loading) {
+  if (false || loading) {
     return (
       <div>
         <Header />
@@ -222,7 +222,7 @@ export default function ModulePage({ params }: { params: Promise<{ id: string; m
     );
   }
 
-  if (status === 'unauthenticated' || !course || !module) {
+  if (false || !course || !module) {
     return null;
   }
 

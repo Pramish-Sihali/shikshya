@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Header from '@/components/Header';
 import FlashcardsGame from '@/components/FlashcardsGame';
@@ -12,19 +11,13 @@ import { GamificationResult } from '@/lib/gamification';
 type GameType = 'menu' | 'flashcards' | 'matching';
 
 export default function GamesPage() {
-  const { data: session, status } = useSession();
+  // For demo purposes, use mock session
+  const session = { user: { name: 'Demo User', id: 'demo-1' } };
   const router = useRouter();
   const [currentGame, setCurrentGame] = useState<GameType>('menu');
   const [gamificationResult, setGamificationResult] = useState<GamificationResult | null>(null);
 
-  useEffect(() => {
-    if (status === 'unauthenticated') {
-      router.push('/');
-    }
-  }, [status, router]);
-
   const handleGameComplete = async (gameId: string, score: number, timeSpent: number) => {
-    if (!session?.user?.id) return;
 
     try {
       const response = await fetch('/api/games/score', {
@@ -71,20 +64,6 @@ export default function GamesPage() {
     { id: 'p6', left: 'z-index', right: 'Controls stacking order of elements' }
   ];
 
-  if (status === 'loading') {
-    return (
-      <div>
-        <Header />
-        <div className="min-h-screen flex items-center justify-center">
-          <div className="text-xl">Loading...</div>
-        </div>
-      </div>
-    );
-  }
-
-  if (status === 'unauthenticated') {
-    return null;
-  }
 
   return (
     <div className="min-h-screen bg-gray-50">

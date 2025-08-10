@@ -1,67 +1,36 @@
 'use client';
 
 import { useState } from 'react';
-import { signIn, getSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
 export default function SignIn() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
     setLoading(true);
 
-    try {
-      const result = await signIn('credentials', {
-        email,
-        password,
-        redirect: false,
-      });
-
-      if (result?.error) {
-        setError('Invalid email or password');
-      } else {
-        // Refresh session and redirect
-        await getSession();
-        router.push('/dashboard');
-      }
-    } catch {
-      setError('An error occurred. Please try again.');
-    }
-
-    setLoading(false);
+    // Simulate loading for demo purposes
+    setTimeout(() => {
+      setLoading(false);
+      router.push('/dashboard');
+    }, 1000);
   };
 
   const handleDemoLogin = async (userEmail: string, userPassword: string) => {
     setEmail(userEmail);
     setPassword(userPassword);
-    setError('');
     setLoading(true);
 
-    try {
-      const result = await signIn('credentials', {
-        email: userEmail,
-        password: userPassword,
-        redirect: false,
-      });
-
-      if (result?.error) {
-        setError('Login failed');
-      } else {
-        await getSession();
-        router.push('/dashboard');
-      }
-    } catch {
-      setError('An error occurred. Please try again.');
-    }
-
-    setLoading(false);
+    // Simulate loading for demo purposes
+    setTimeout(() => {
+      setLoading(false);
+      router.push('/dashboard');
+    }, 1000);
   };
 
   return (
@@ -80,11 +49,6 @@ export default function SignIn() {
         </div>
 
         <div className="card">
-          {error && (
-            <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
-              {error}
-            </div>
-          )}
 
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>

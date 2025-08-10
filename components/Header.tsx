@@ -1,10 +1,10 @@
 'use client';
 
 import Link from 'next/link';
-import { useSession, signOut } from 'next-auth/react';
 
 export default function Header() {
-  const { data: session, status } = useSession();
+  // For demo purposes, always show as not authenticated
+  const isAuthenticated = false;
 
   return (
     <header className="bg-primary text-white shadow-lg">
@@ -17,66 +17,30 @@ export default function Header() {
           </div>
 
           <nav className="hidden md:flex space-x-8">
-            {status === 'authenticated' ? (
-              <>
-                <Link href="/dashboard" className="hover:text-accent-light transition-colors">
-                  Dashboard
-                </Link>
-                <Link href="/courses" className="hover:text-accent-light transition-colors">
-                  Courses
-                </Link>
-                <Link href="/roadmaps" className="hover:text-accent-light transition-colors">
-                  Roadmaps
-                </Link>
-                <Link href="/games" className="hover:text-accent-light transition-colors">
-                  Games
-                </Link>
-                <Link href="/profile" className="hover:text-accent-light transition-colors">
-                  Profile
-                </Link>
-              </>
-            ) : (
-              <>
-                <Link href="#features" className="hover:text-accent-light transition-colors">
-                  Features
-                </Link>
-                <Link href="#courses" className="hover:text-accent-light transition-colors">
-                  Courses
-                </Link>
-                <Link href="#roadmaps" className="hover:text-accent-light transition-colors">
-                  Roadmaps
-                </Link>
-              </>
-            )}
+            <Link href="#features" className="hover:text-accent-light transition-colors">
+              Features
+            </Link>
+            <Link href="#courses" className="hover:text-accent-light transition-colors">
+              Courses
+            </Link>
+            <Link href="#roadmaps" className="hover:text-accent-light transition-colors">
+              Roadmaps
+            </Link>
           </nav>
 
           <div className="flex items-center space-x-4">
-            {status === 'authenticated' ? (
-              <div className="flex items-center space-x-4">
-                <span className="text-sm">Hello, {session.user?.name}</span>
-                <button
-                  onClick={() => signOut()}
-                  className="bg-accent text-primary px-4 py-2 rounded-lg hover:bg-accent-dark transition-colors text-sm font-medium"
-                >
-                  Sign Out
-                </button>
-              </div>
-            ) : (
-              <div className="flex items-center space-x-4">
-                <Link
-                  href="/auth/signin"
-                  className="text-white hover:text-accent-light transition-colors"
-                >
-                  Sign In
-                </Link>
-                <Link
-                  href="/auth/signin"
-                  className="bg-accent text-primary px-4 py-2 rounded-lg hover:bg-accent-dark transition-colors font-medium"
-                >
-                  Get Started
-                </Link>
-              </div>
-            )}
+            <Link
+              href="/auth/signin"
+              className="text-white hover:text-accent-light transition-colors"
+            >
+              Sign In
+            </Link>
+            <Link
+              href="/auth/signin"
+              className="bg-accent text-primary px-4 py-2 rounded-lg hover:bg-accent-dark transition-colors font-medium"
+            >
+              Get Started
+            </Link>
           </div>
 
           {/* Mobile menu button */}

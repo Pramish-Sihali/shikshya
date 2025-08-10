@@ -1,14 +1,14 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Header from '@/components/Header';
 import { Course, User } from '@/lib/types';
 
 export default function Courses() {
-  const { data: session, status } = useSession();
+  // For demo purposes, use mock session
+  const session = { user: { name: 'Demo User', id: 'demo-1' } };
   const router = useRouter();
   const [courses, setCourses] = useState<Course[]>([]);
   const [user, setUser] = useState<User | null>(null);
@@ -16,15 +16,8 @@ export default function Courses() {
   const [enrolling, setEnrolling] = useState<string | null>(null);
 
   useEffect(() => {
-    if (status === 'unauthenticated') {
-      router.push('/');
-      return;
-    }
-
-    if (status === 'authenticated') {
-      fetchData();
-    }
-  }, [status, router]);
+    fetchData();
+  }, []);
 
   const fetchData = async () => {
     try {
@@ -34,11 +27,9 @@ export default function Courses() {
       setCourses(coursesData);
 
       // Fetch user data
-      if (session?.user?.id) {
-        const userResponse = await fetch(`/api/user/progress?userId=${session.user.id}`);
-        const userData = await userResponse.json();
-        setUser(userData.user);
-      }
+      const userResponse = await fetch(`/api/user/progress?userId=${session.user.id}`);
+      const userData = await userResponse.json();
+      setUser(userData.user);
     } catch (error) {
       console.error('Failed to fetch data:', error);
     } finally {
@@ -47,7 +38,6 @@ export default function Courses() {
   };
 
   const handleEnroll = async (courseId: string) => {
-    if (!session?.user?.id) return;
     
     setEnrolling(courseId);
     try {
@@ -77,7 +67,7 @@ export default function Courses() {
     return user?.enrolledCourses.includes(courseId) || false;
   };
 
-  if (status === 'loading' || loading) {
+  if (loading) {
     return (
       <div>
         <Header />
@@ -86,10 +76,6 @@ export default function Courses() {
         </div>
       </div>
     );
-  }
-
-  if (status === 'unauthenticated') {
-    return null;
   }
 
   return (

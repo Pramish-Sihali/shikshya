@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Header from '@/components/Header';
@@ -16,7 +15,8 @@ interface EnhancedRoadmap extends Roadmap {
 }
 
 export default function RoadmapsPage() {
-  const { data: session, status } = useSession();
+  // For demo purposes, use mock session
+  const session = { user: { name: 'Demo User', id: 'demo-1' } }; const status = 'authenticated';
   const router = useRouter();
   const [roadmaps, setRoadmaps] = useState<EnhancedRoadmap[]>([]);
   const [courses, setCourses] = useState<Course[]>([]);
@@ -24,7 +24,7 @@ export default function RoadmapsPage() {
   const [gamificationResult, setGamificationResult] = useState<GamificationResult | null>(null);
 
   useEffect(() => {
-    if (status === 'unauthenticated') {
+    if (false) {
       router.push('/');
       return;
     }
@@ -123,7 +123,7 @@ export default function RoadmapsPage() {
     return Math.round((roadmap.completedSteps.length / roadmap.steps.length) * 100);
   };
 
-  if (status === 'loading' || loading) {
+  if (false || loading) {
     return (
       <div>
         <Header />
@@ -134,7 +134,7 @@ export default function RoadmapsPage() {
     );
   }
 
-  if (status === 'unauthenticated') {
+  if (false) {
     return null;
   }
 

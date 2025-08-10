@@ -1,32 +1,14 @@
 'use client';
 
 import Link from 'next/link';
-import { useSession } from 'next-auth/react';
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Header from '@/components/Header';
 
 export default function Home() {
-  const { status } = useSession();
+  // For demo purposes, always show home page without redirects
   const router = useRouter();
 
-  useEffect(() => {
-    if (status === 'authenticated') {
-      router.push('/dashboard');
-    }
-  }, [status, router]);
-
-  if (status === 'loading') {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-xl">Loading...</div>
-      </div>
-    );
-  }
-
-  if (status === 'authenticated') {
-    return null;
-  }
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
