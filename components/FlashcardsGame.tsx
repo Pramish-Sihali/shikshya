@@ -115,9 +115,14 @@ export default function FlashcardsGame({ cards, timeLimit = 180, onComplete }: F
           Time: {formatTime(timeSpent)} • Score: {Math.round((correctCount / cards.length) * 100)}
         </div>
 
-        <button onClick={restartGame} className="btn-primary mr-4">
-          Play Again
-        </button>
+        <div className="text-center">
+          <button onClick={restartGame} className="btn-secondary">
+            Try Again
+          </button>
+          <div className="text-sm text-gray-600 mt-4">
+            🎉 Great job! Returning to course...
+          </div>
+        </div>
       </div>
     );
   }

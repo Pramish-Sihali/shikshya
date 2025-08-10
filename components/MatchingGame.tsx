@@ -191,9 +191,14 @@ export default function MatchingGame({ pairs, timeLimit = 120, onComplete }: Mat
           {matches} of {pairs.length} pairs matched • {attempts} attempts
         </div>
 
-        <button onClick={restartGame} className="btn-primary">
-          Play Again
-        </button>
+        <div className="text-center">
+          <button onClick={restartGame} className="btn-secondary">
+            Try Again
+          </button>
+          <div className="text-sm text-gray-600 mt-4">
+            🎯 Excellent matching! Returning to course...
+          </div>
+        </div>
       </div>
     );
   }

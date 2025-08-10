@@ -6,6 +6,8 @@ import Link from 'next/link';
 import Header from '@/components/Header';
 import Timer from '@/components/Timer';
 import Quiz from '@/components/Quiz';
+import FlashcardsGame from '@/components/FlashcardsGame';
+import MatchingGame from '@/components/MatchingGame';
 import XPGainAnimation from '@/components/XPGainAnimation';
 import { Course, Module, Progress } from '@/lib/types';
 import { GamificationResult } from '@/lib/gamification';
@@ -136,6 +138,63 @@ export default function ModulePage({ params }: { params: Promise<{ id: string; m
     }
   };
 
+  const handleGameComplete = async (score: number, gameTimeSpent: number) => {
+    setCompleting(true);
+    
+    try {
+      // First, submit the game score
+      const gameResponse = await fetch('/api/games/score', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          userId: session?.user?.id,
+          courseId: id,
+          moduleId: moduleId,
+          gameId: module?.game?.id,
+          score,
+          timeSpent: gameTimeSpent
+        }),
+      });
+
+      // Then, mark the module as completed
+      const totalTime = timeSpent + gameTimeSpent;
+      const progressResponse = await fetch(`/api/progress/${moduleId}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          userId: session?.user?.id,
+          courseId: id,
+          timeSpentSeconds: totalTime,
+          completed: true
+        }),
+      });
+
+      if (gameResponse.ok && progressResponse.ok) {
+        const gameData = await gameResponse.json();
+        const progressData = await progressResponse.json();
+        
+        setProgress(progressData.progress);
+        
+        // Combine gamification results
+        if (gameData.gamification || progressData.gamification) {
+          setGamificationResult(gameData.gamification || progressData.gamification);
+        }
+
+        // Auto-redirect back to course page after showing results
+        setTimeout(() => {
+          router.push(`/courses/${id}`);
+        }, 3000);
+      }
+    } catch (error) {
+      console.error('Failed to submit game completion:', error);
+      setCompleting(false);
+    }
+  };
+
   const handleTimeUpdate = async (seconds: number) => {
     setTimeSpent(seconds);
     
@@ -195,16 +254,33 @@ export default function ModulePage({ params }: { params: Promise<{ id: string; m
         );
       
       case 'game':
-        return (
-          <div className="text-center py-12">
-            <div className="text-4xl mb-4">🎮</div>
-            <h3 className="text-xl font-bold text-primary mb-4">{module.title}</h3>
-            <p className="text-gray-600 mb-6">This is a placeholder for the {module.game?.type} game.</p>
-            <Link href="/games" className="btn-primary">
-              Play Game
-            </Link>
-          </div>
-        );
+        if (!module.game) return <div>Game not found</div>;
+        
+        if (module.game.type === 'flashcards' && 'cards' in module.game.data) {
+          return (
+            <FlashcardsGame
+              cards={module.game.data.cards}
+              timeLimit={module.timeEstimateMinutes * 60}
+              onComplete={handleGameComplete}
+            />
+          );
+        } else if (module.game.type === 'matching' && 'pairs' in module.game.data) {
+          return (
+            <MatchingGame
+              pairs={module.game.data.pairs}
+              timeLimit={module.timeEstimateMinutes * 60}
+              onComplete={handleGameComplete}
+            />
+          );
+        } else {
+          return (
+            <div className="text-center py-12">
+              <div className="text-4xl mb-4">🎮</div>
+              <h3 className="text-xl font-bold text-primary mb-4">{module.title}</h3>
+              <p className="text-gray-600 mb-6">Game type &apos;{module.game.type}&apos; not yet implemented.</p>
+            </div>
+          );
+        }
       
       default:
         return <div>Unknown module type</div>;

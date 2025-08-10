@@ -550,38 +550,203 @@ Learn the essential concepts for creating compelling video content.
 - **Layering**: Video and audio on separate tracks
 
 ## Types of Cuts:
-- **Hard Cut**: Direct transition between clips
+- **Hard Cut**: Direct transition between clips (90% of edits)
 - **J-Cut**: Audio continues before video changes
 - **L-Cut**: Audio changes before video
-- **Cross Fade**: Smooth transition between clips
+- **Cross Dissolve**: Smooth blend for emotional moments
 
 ## Essential Tools:
 - **Razor Tool**: Split clips at specific points
 - **Selection Tool**: Move and adjust clips
 - **Zoom Tool**: Navigate timeline precisely
 - **Hand Tool**: Pan across timeline
+- **Slip Tool**: Adjust clip content without changing duration
 
-## Color and Audio:
-- **Color Correction**: Fix exposure and white balance
-- **Color Grading**: Create mood and style
-- **Audio Levels**: Balance dialogue and music
-- **Sound Design**: Add effects and atmosphere`,
+## The 321 Rule:
+- **3** copies of important footage
+- **2** different storage types (SSD + HDD)
+- **1** offsite backup (cloud storage)
+
+## Project Organization:
+Create folder structure:
+- Raw_Footage/
+- Assets/ (graphics, music, SFX)
+- Project_Files/
+- Exports/
+- Archive/`,
         timeEstimateMinutes: 25
       },
       {
+        id: '6-1-game',
+        type: 'game',
+        title: 'Video Editing Basics Quiz',
+        timeEstimateMinutes: 8,
+        game: {
+          id: 'game-6-1-basics',
+          type: 'flashcards',
+          data: {
+            cards: [
+              { front: 'Timeline', back: 'Where video clips are arranged chronologically' },
+              { front: 'Hard Cut', back: 'Direct transition between clips (most common)' },
+              { front: 'J-Cut', back: 'Audio continues while video changes' },
+              { front: 'Razor Tool', back: 'Splits clips at specific points' },
+              { front: 'B-Roll', back: 'Supplementary footage supporting main content' }
+            ]
+          },
+          maxScore: 100,
+          xpReward: 20
+        }
+      },
+      {
         id: '6-2',
+        type: 'doc',
+        title: 'Color Correction and Grading',
+        markdown: `# Color Correction and Grading
+
+Transform the look and feel of your footage through color manipulation.
+
+## Color Correction vs Color Grading:
+- **Correction**: Fix technical issues (exposure, white balance)
+- **Grading**: Create artistic look and mood
+
+## Primary Color Correction:
+1. **Exposure**: Fix over/under exposed shots
+2. **Highlights/Shadows**: Recover detail in bright/dark areas  
+3. **White Balance**: Correct color temperature
+4. **Contrast**: Set black and white points
+5. **Saturation**: Adjust color intensity
+
+## Color Wheels:
+- **Lift** (Shadows): Adjust dark areas
+- **Gamma** (Midtones): Adjust middle values
+- **Gain** (Highlights): Adjust bright areas
+
+## Popular Color Grades:
+- **Orange & Teal**: Blockbuster cinematic look
+- **Desaturated**: Gritty, realistic feel  
+- **High Contrast**: Dramatic, punchy style
+- **Vintage**: Film emulation with grain
+
+## Technical Standards:
+- **Rec. 709**: Standard HD color space
+- **Rec. 2020**: 4K/HDR color space
+- **DCI-P3**: Digital cinema standard
+
+## Workflow Tips:
+1. Always correct before grading
+2. Use scopes, not just your eyes
+3. Match shots within scenes
+4. Create consistent look across project
+5. Export with proper color space`,
+        timeEstimateMinutes: 20
+      },
+      {
+        id: '6-3',
         type: 'video',
-        title: 'Timeline Basics',
+        title: 'Timeline and Cutting Techniques',
         contentUrl: 'https://www.youtube.com/embed/8z7JKBYbyg0',
         timeEstimateMinutes: 18
       },
       {
-        id: '6-3',
-        type: 'quiz',
-        title: 'Video Editing Quiz',
+        id: '6-3-game',
+        type: 'game',
+        title: 'Color Grading Challenge',
         timeEstimateMinutes: 12,
+        game: {
+          id: 'game-6-3-color',
+          type: 'matching',
+          data: {
+            pairs: [
+              { id: 'p1', left: 'Orange & Teal', right: 'Blockbuster cinematic look' },
+              { id: 'p2', left: 'Lift', right: 'Adjusts shadow/dark areas' },
+              { id: 'p3', left: 'Gamma', right: 'Adjusts midtone values' },
+              { id: 'p4', left: 'White Balance', right: 'Corrects color temperature' },
+              { id: 'p5', left: 'Rec. 709', right: 'Standard HD color space' }
+            ]
+          },
+          maxScore: 100,
+          xpReward: 25
+        }
+      },
+      {
+        id: '6-4',
+        type: 'doc',
+        title: 'Audio Post-Production',
+        markdown: `# Audio Post-Production
+
+Great audio is 50% of your video's success. Master these audio editing techniques.
+
+## Audio Levels (dBFS):
+- **Dialogue**: -12 to -6 dBFS (primary focus)
+- **Music**: -18 to -12 dBFS (supporting)
+- **Sound Effects**: -15 to -8 dBFS (accent)
+- **Room Tone**: -30 to -20 dBFS (background)
+
+## Essential Audio Processing:
+1. **Noise Reduction**: Remove unwanted background noise
+2. **EQ (Equalization)**: Shape frequency response
+3. **Compression**: Control dynamic range
+4. **De-esser**: Reduce harsh 's' sounds
+5. **Limiter**: Prevent audio clipping
+
+## EQ Frequency Guide:
+- **80-120 Hz**: Remove low rumble (high-pass filter)
+- **200-500 Hz**: Reduce muddiness  
+- **1-3 kHz**: Add clarity and presence
+- **5-8 kHz**: Enhance intelligibility
+- **10+ kHz**: Add air and sparkle
+
+## Audio Mixing Tips:
+- **Duck music** under dialogue
+- **Use room tone** to fill gaps
+- **Match audio perspective** to shot size
+- **Add subtle reverb** for space
+- **Automate levels** for consistency
+
+## Common Audio Problems:
+- **Echo**: Too much reverb or room reflection
+- **Hum**: Electrical interference (50/60Hz)
+- **Sibilance**: Harsh 's' and 't' sounds  
+- **Clipping**: Digital distortion from levels too high
+- **Phase Issues**: Cancellation from multiple mics`,
+        timeEstimateMinutes: 22
+      },
+      {
+        id: '6-5',
+        type: 'video',
+        title: 'Professional Audio Mixing',
+        contentUrl: 'https://www.youtube.com/embed/JyCG_5l3XLk',
+        timeEstimateMinutes: 16
+      },
+      {
+        id: '6-5-game',
+        type: 'game',
+        title: 'Audio Levels Practice',
+        timeEstimateMinutes: 10,
+        game: {
+          id: 'game-6-5-audio',
+          type: 'flashcards',
+          data: {
+            cards: [
+              { front: 'Dialogue Level', back: '-12 to -6 dBFS (primary audio)' },
+              { front: 'Music Level', back: '-18 to -12 dBFS (supporting)' },
+              { front: 'High-Pass Filter', back: 'Removes low frequency rumble (80-120Hz)' },
+              { front: 'Compression', back: 'Controls dynamic range of audio' },
+              { front: 'De-esser', back: 'Reduces harsh sibilant sounds' },
+              { front: 'Room Tone', back: 'Background ambience at -30 to -20 dBFS' }
+            ]
+          },
+          maxScore: 100,
+          xpReward: 22
+        }
+      },
+      {
+        id: '6-6',
+        type: 'quiz',
+        title: 'Video Editing Mastery Quiz',
+        timeEstimateMinutes: 15,
         quiz: {
-          id: 'quiz-6-3',
+          id: 'quiz-6-6',
           questions: [
             {
               id: 'q1',
@@ -596,32 +761,107 @@ Learn the essential concepts for creating compelling video content.
               options: ['30fps', '60fps', '24fps', '25fps'],
               correctAnswer: 2,
               timeLimit: 25
+            },
+            {
+              id: 'q3',
+              question: 'What should dialogue audio levels be?',
+              options: ['-18 to -12 dBFS', '-12 to -6 dBFS', '-6 to 0 dBFS', '-30 to -20 dBFS'],
+              correctAnswer: 1,
+              timeLimit: 25
+            },
+            {
+              id: 'q4',
+              question: 'What does color correction do?',
+              options: ['Creates artistic mood', 'Fixes technical issues', 'Adds special effects', 'Increases saturation'],
+              correctAnswer: 1,
+              timeLimit: 30
             }
           ],
-          passingScore: 70,
+          passingScore: 75,
+          xpReward: 40
+        }
+      },
+      {
+        id: '6-7',
+        type: 'game',
+        title: 'Video Editing Workflow Challenge',
+        timeEstimateMinutes: 15,
+        game: {
+          id: 'game-6-7-workflow',
+          type: 'matching',
+          data: {
+            pairs: [
+              { id: 'p1', left: 'Pre-Production', right: 'Planning and project setup' },
+              { id: 'p2', left: 'Assembly Edit', right: 'Rough cut with main story' },
+              { id: 'p3', left: 'Fine Cut', right: 'Detailed edit with B-roll' },
+              { id: 'p4', left: 'Color Grade', right: 'Artistic look and mood' },
+              { id: 'p5', left: 'Audio Mix', right: 'Balance dialogue, music, SFX' },
+              { id: 'p6', left: 'Final Export', right: 'Render for specific delivery' }
+            ]
+          },
+          maxScore: 100,
           xpReward: 35
         }
       },
       {
-        id: '6-4',
-        type: 'game',
-        title: 'Editing Terms Flashcards',
-        timeEstimateMinutes: 10,
-        game: {
-          id: 'game-6-4',
-          type: 'flashcards',
-          data: {
-            cards: [
-              { front: 'Timeline', back: 'Where video clips are arranged chronologically' },
-              { front: 'Keyframe', back: 'A point where animation values are set' },
-              { front: 'B-Roll', back: 'Supplementary footage to support main content' },
-              { front: 'LUT', back: 'Look-up table for color grading' },
-              { front: 'Codec', back: 'Format for compressing video files' }
-            ]
-          },
-          maxScore: 100,
-          xpReward: 30
-        }
+        id: '6-8',
+        type: 'doc',
+        title: 'Export Settings and Delivery',
+        markdown: `# Export Settings and Delivery
+
+Master the final step: delivering your video in the right format for each platform.
+
+## Platform-Specific Settings:
+
+### YouTube/Vimeo
+- **Codec**: H.264
+- **Resolution**: 1080p (1920x1080) or 4K (3840x2160)
+- **Frame Rate**: Match source (24/30/60fps)
+- **Bitrate**: 8-12 Mbps (1080p), 35-45 Mbps (4K)
+- **Audio**: AAC, 320kbps, 48kHz
+
+### Social Media
+- **Instagram Feed**: 1080x1080 (square)
+- **Instagram Stories/Reels**: 1080x1920 (9:16)
+- **TikTok**: 1080x1920, 30fps max
+- **Facebook**: 1280x720 minimum
+- **Twitter**: 1280x720, under 2:20 duration
+
+### Professional/Broadcast
+- **Codec**: ProRes 422 or DNxHD
+- **Color Space**: Rec. 709 (HD), Rec. 2020 (4K)
+- **Audio**: 48kHz, 24-bit
+- **Timecode**: Drop-frame for 29.97fps
+
+## Bitrate Guidelines:
+- **1080p**: 5-10 Mbps (web), 50-100 Mbps (broadcast)
+- **4K**: 25-45 Mbps (web), 150-300 Mbps (broadcast)
+- **Audio**: 128-320 kbps (AAC), 48-96 kHz
+
+## Quality Control Checklist:
+- ✓ Audio levels consistent (-12 to -6 dBFS dialogue)
+- ✓ No dropped frames or technical glitches
+- ✓ Color consistency within scenes
+- ✓ Text readable and well-timed
+- ✓ Proper aspect ratio for platform
+- ✓ File size appropriate for delivery
+
+## Archive and Backup:
+1. **Master File**: Highest quality (ProRes/DNxHD)
+2. **Project Files**: Native editing project + media
+3. **Delivery Files**: Platform-optimized exports
+4. **Documentation**: Export settings, revision notes
+
+## Delivery Methods:
+- **Cloud Transfer**: Google Drive, Dropbox, WeTransfer
+- **FTP/SFTP**: For broadcast/professional clients
+- **Physical Media**: USB drives, external hard drives
+- **Streaming Platforms**: Direct upload to YouTube/Vimeo
+
+## File Naming Convention:
+ProjectName_Version_Platform_Date.extension
+Example: "Nike_Commercial_V3_YouTube_20240115.mp4"`,
+        timeEstimateMinutes: 18
       }
     ]
   },

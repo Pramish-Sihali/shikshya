@@ -30,6 +30,9 @@ export default function Header() {
             <Link href="/games" className="hover:text-accent-light transition-colors">
               Games
             </Link>
+            <Link href="/blog" className="hover:text-accent-light transition-colors">
+              Blog
+            </Link>
           </nav>
 
           <div className="flex items-center space-x-4">
