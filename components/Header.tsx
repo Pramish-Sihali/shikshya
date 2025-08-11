@@ -12,8 +12,13 @@ export default function Header() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           <div className="flex items-center">
-            <Link href="/dashboard" className="text-xl font-bold text-accent">
-              Shikshya Path
+            <Link href="/dashboard" className="flex items-center space-x-3 text-xl font-bold text-accent">
+              <img 
+                src="/logo.jpeg" 
+                alt="Shikshya Path Logo" 
+                className="w-10 h-10 rounded-lg object-cover"
+              />
+              <span>Shikshya Path</span>
             </Link>
           </div>
 
@@ -28,7 +33,7 @@ export default function Header() {
               Roadmaps
             </Link>
             <Link href="/games" className="hover:text-accent-light transition-colors">
-              Games
+              Quest
             </Link>
             <Link href="/blog" className="hover:text-accent-light transition-colors">
               Blog

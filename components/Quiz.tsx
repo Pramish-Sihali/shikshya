@@ -6,9 +6,10 @@ import { Quiz as QuizType } from '@/lib/types';
 interface QuizProps {
   quiz: QuizType;
   onComplete: (score: number, answers: number[], timeSpent: number) => void;
+  onRetry?: () => void;
 }
 
-export default function Quiz({ quiz, onComplete }: QuizProps) {
+export default function Quiz({ quiz, onComplete, onRetry }: QuizProps) {
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answers, setAnswers] = useState<number[]>(new Array(quiz.questions.length).fill(-1));
   const [timeLeft, setTimeLeft] = useState(quiz.questions[0]?.timeLimit || 30);
@@ -47,6 +48,14 @@ export default function Quiz({ quiz, onComplete }: QuizProps) {
     setAnswers(newAnswers);
   };
 
+  const moveToPreviousQuestion = () => {
+    if (currentQuestion > 0) {
+      const prevQuestion = currentQuestion - 1;
+      setCurrentQuestion(prevQuestion);
+      setTimeLeft(quiz.questions[prevQuestion]?.timeLimit || 30);
+    }
+  };
+
   const moveToNextQuestion = () => {
     if (currentQuestion < quiz.questions.length - 1) {
       const nextQuestion = currentQuestion + 1;
@@ -55,6 +64,14 @@ export default function Quiz({ quiz, onComplete }: QuizProps) {
     } else {
       finishQuiz();
     }
+  };
+
+  const restartQuiz = () => {
+    setCurrentQuestion(0);
+    setAnswers(new Array(quiz.questions.length).fill(-1));
+    setTimeLeft(quiz.questions[0]?.timeLimit || 30);
+    setTotalTimeSpent(0);
+    setIsCompleted(false);
   };
 
   const finishQuiz = () => {
@@ -85,10 +102,13 @@ export default function Quiz({ quiz, onComplete }: QuizProps) {
         <div className="text-center">
           <div className="text-6xl mb-4">{passed ? '🎉' : '😅'}</div>
           <h2 className="text-2xl font-bold text-primary mb-4">
-            {passed ? 'Congratulations!' : 'Keep Trying!'}
+            {passed ? 'Congratulations!' : 'Almost There!'}
           </h2>
           <p className="text-lg text-gray-900 mb-6">
-            You scored {score}% (needed {quiz.passingScore}% to pass)
+            {passed 
+              ? `Excellent! You scored ${score}% and passed the quiz!`
+              : `You scored ${score}%. You need ${quiz.passingScore}% to pass. Don't give up - try again!`
+            }
           </p>
           
           {/* Results Summary */}
@@ -115,9 +135,37 @@ export default function Quiz({ quiz, onComplete }: QuizProps) {
             </div>
           </div>
 
+          {/* Action Buttons */}
+          <div className="flex justify-center space-x-4 mt-6">
+            {!passed && onRetry && (
+              <button 
+                onClick={restartQuiz}
+                className="btn-primary"
+              >
+                Try Again
+              </button>
+            )}
+            {!passed && (
+              <button 
+                onClick={() => window.history.back()}
+                className="btn-secondary"
+              >
+                Back to Course
+              </button>
+            )}
+            {passed && (
+              <button 
+                onClick={() => window.history.back()}
+                className="btn-primary"
+              >
+                Continue Course
+              </button>
+            )}
+          </div>
+
           {/* XP Reward Info */}
-          <p className="text-sm text-gray-500">
-            {passed ? `+${quiz.xpReward} XP earned!` : `+${Math.floor(quiz.xpReward / 6)} XP for trying`}
+          <p className="text-sm text-gray-500 mt-4">
+            {passed ? `+${quiz.xpReward} XP earned!` : `+${Math.floor(quiz.xpReward / 3)} XP for trying`}
           </p>
         </div>
       </div>
@@ -184,15 +232,25 @@ export default function Quiz({ quiz, onComplete }: QuizProps) {
 
       {/* Navigation */}
       <div className="flex justify-between">
-        <div className="text-sm text-gray-900">
-          Time remaining: {timeLeft}s
+        <div className="flex items-center space-x-4">
+          {currentQuestion > 0 && (
+            <button
+              onClick={moveToPreviousQuestion}
+              className="btn-secondary"
+            >
+              ← Previous
+            </button>
+          )}
+          <div className="text-sm text-gray-900">
+            Time remaining: {timeLeft}s
+          </div>
         </div>
         <button
           onClick={moveToNextQuestion}
           disabled={answers[currentQuestion] === -1}
           className="btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          {currentQuestion === quiz.questions.length - 1 ? 'Finish Quiz' : 'Next Question'}
+          {currentQuestion === quiz.questions.length - 1 ? 'Finish Quiz' : 'Next Question →'}
         </button>
       </div>
     </div>

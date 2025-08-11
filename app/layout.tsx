@@ -12,6 +12,9 @@ const nunito = Nunito({
 export const metadata: Metadata = {
   title: "Shikshya Path - Gamified Learning Platform",
   description: "Learn programming and technology skills through gamified courses, interactive roadmaps, and fun mini-games",
+  icons: {
+    icon: '/favicon.ico',
+  },
 };
 
 export default function RootLayout({

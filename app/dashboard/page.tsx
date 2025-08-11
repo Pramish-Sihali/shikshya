@@ -1,57 +1,15 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Header from '@/components/Header';
 import ProgressBar from '@/components/ProgressBar';
-import { User, Course, Progress } from '@/lib/types';
+import { useApp } from '@/contexts/AppContext';
 import { GamificationEngine } from '@/lib/gamification';
 
-interface UserData {
-  user: User;
-  progress: Progress[];
-}
-
 export default function Dashboard() {
-  // For demo purposes, use mock session and data
-  const session = { user: { name: 'Demo User', email: 'demo@example.com', id: '1' } };
-  const router = useRouter();
-  const [userData, setUserData] = useState<UserData | null>(null);
-  const [enrolledCourses, setEnrolledCourses] = useState<Course[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { user, courses, progress, isLoading } = useApp();
 
-  useEffect(() => {
-    fetchUserData();
-  }, []);
-
-  const fetchUserData = async () => {
-    try {
-      setLoading(true);
-      
-      // Fetch user progress
-      const progressResponse = await fetch(`/api/user/progress?userId=${session.user.id}`);
-      const progressData = await progressResponse.json();
-      
-      // Fetch all courses to get enrolled course details
-      const coursesResponse = await fetch('/api/courses');
-      const allCourses = await coursesResponse.json();
-      
-      // Filter enrolled courses
-      const enrolled = allCourses.filter((course: Course) => 
-        progressData.user.enrolledCourses.includes(course.id)
-      );
-
-      setUserData(progressData);
-      setEnrolledCourses(enrolled);
-    } catch (error) {
-      console.error('Failed to fetch user data:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  if (loading) {
+  if (isLoading) {
     return (
       <div>
         <Header />
@@ -62,7 +20,7 @@ export default function Dashboard() {
     );
   }
 
-  if (!userData) {
+  if (!user) {
     return (
       <div>
         <Header />
@@ -73,7 +31,8 @@ export default function Dashboard() {
     );
   }
 
-  const { user, progress } = userData;
+  // Get enrolled courses
+  const enrolledCourses = courses.filter(course => user.enrolledCourses.includes(course.id));
 
   const getProgressToNextLevel = () => {
     return GamificationEngine.getProgressToNextLevel(user.xp);
@@ -118,14 +77,15 @@ export default function Dashboard() {
             {/* Stats Cards */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {/* XP & Level */}
-              <div className="card">
+              <div className="card bg-gradient-to-br from-accent to-accent-light relative overflow-hidden group cursor-pointer" title="Experience Points - Earn XP by completing lessons, quizzes, and challenges!">
                 <div className="flex items-center justify-between mb-4">
                   <div className="text-2xl">⭐</div>
                   <div className="text-right">
-                    <div className="text-2xl font-bold text-accent">{user.xp}</div>
-                    <div className="text-sm text-gray-500">XP</div>
+                    <div className="text-2xl font-bold text-primary">{user.xp}</div>
+                    <div className="text-sm text-primary/70">XP</div>
                   </div>
                 </div>
+                <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-200 rounded-lg"></div>
                 <div className="space-y-2">
                   <div className="flex justify-between text-sm">
                     <span>Level {user.level}</span>
@@ -140,28 +100,30 @@ export default function Dashboard() {
               </div>
 
               {/* Streak */}
-              <div className="card">
+              <div className="card bg-gradient-to-br from-orange-100 to-orange-200 relative overflow-hidden group cursor-pointer" title="Daily Streak - Keep learning every day to maintain your streak!">
                 <div className="flex items-center justify-between mb-4">
                   <div className="text-2xl">🔥</div>
                   <div className="text-right">
-                    <div className="text-2xl font-bold text-orange-500">{user.streak.currentStreak}</div>
-                    <div className="text-sm text-gray-500">Day Streak</div>
+                    <div className="text-2xl font-bold text-orange-600">{user.streak.currentStreak}</div>
+                    <div className="text-sm text-orange-500">Day Streak</div>
                   </div>
                 </div>
+                <div className="absolute inset-0 bg-orange-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-200 rounded-lg"></div>
                 <div className="text-sm text-gray-600">
                   {user.streak.currentStreak > 0 ? 'Keep it up!' : 'Start your streak today!'}
                 </div>
               </div>
 
               {/* Badges */}
-              <div className="card">
+              <div className="card bg-gradient-to-br from-primary/10 to-primary/20 relative overflow-hidden group cursor-pointer" title="Badges - Collect achievements by completing courses and special challenges!">
                 <div className="flex items-center justify-between mb-4">
                   <div className="text-2xl">🏆</div>
                   <div className="text-right">
                     <div className="text-2xl font-bold text-primary">{user.badges.length}</div>
-                    <div className="text-sm text-gray-500">Badges</div>
+                    <div className="text-sm text-primary/70">Badges</div>
                   </div>
                 </div>
+                <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-200 rounded-lg"></div>
                 <div className="flex space-x-1">
                   {user.badges.slice(0, 3).map((badge) => (
                     <span key={badge.id} className="text-lg" title={badge.name}>
@@ -231,35 +193,45 @@ export default function Dashboard() {
           {/* Right Column - Quick Actions & Activity */}
           <div className="space-y-6">
             {/* Quick Actions */}
-            <div className="card">
-              <h2 className="text-lg font-bold text-primary mb-4">Quick Actions</h2>
+            <div className="card bg-gradient-to-br from-accent/20 to-accent/30 border-accent/30">
+              <h2 className="text-lg font-bold text-primary mb-4 flex items-center">
+                <span className="mr-2">⚡</span>
+                Quick Actions
+              </h2>
               <div className="space-y-3">
-                <Link href="/courses" className="flex items-center p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+                <Link href="/courses" className="flex items-center p-3 bg-white/70 rounded-lg hover:bg-white/90 hover:shadow-sm transition-all duration-200">
                   <div className="text-2xl mr-3">📚</div>
                   <div>
-                    <div className="font-medium">Browse Courses</div>
-                    <div className="text-sm text-gray-500">Find new courses to learn</div>
+                    <div className="font-medium text-primary">Browse Courses</div>
+                    <div className="text-sm text-primary/70">Find new courses to learn</div>
                   </div>
                 </Link>
-                <Link href="/roadmaps" className="flex items-center p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+                <Link href="/roadmaps" className="flex items-center p-3 bg-white/70 rounded-lg hover:bg-white/90 hover:shadow-sm transition-all duration-200">
                   <div className="text-2xl mr-3">🗺️</div>
                   <div>
-                    <div className="font-medium">Career Roadmaps</div>
-                    <div className="text-sm text-gray-500">Follow structured learning paths</div>
+                    <div className="font-medium text-primary">Career Roadmaps</div>
+                    <div className="text-sm text-primary/70">Follow structured learning paths</div>
                   </div>
                 </Link>
-                <Link href="/games" className="flex items-center p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+                <Link href="/games" className="flex items-center p-3 bg-white/70 rounded-lg hover:bg-white/90 hover:shadow-sm transition-all duration-200">
                   <div className="text-2xl mr-3">🎮</div>
                   <div>
-                    <div className="font-medium">Play Games</div>
-                    <div className="text-sm text-gray-500">Learn through fun games</div>
+                    <div className="font-medium text-primary">Play Quest</div>
+                    <div className="text-sm text-primary/70">Learn through fun games</div>
                   </div>
                 </Link>
-                <Link href="/profile" className="flex items-center p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+                <Link href="/stats" className="flex items-center p-3 bg-white/70 rounded-lg hover:bg-white/90 hover:shadow-sm transition-all duration-200">
+                  <div className="text-2xl mr-3">📊</div>
+                  <div>
+                    <div className="font-medium text-primary">View Stats</div>
+                    <div className="text-sm text-primary/70">XP, Streaks & Badges details</div>
+                  </div>
+                </Link>
+                <Link href="/profile" className="flex items-center p-3 bg-white/70 rounded-lg hover:bg-white/90 hover:shadow-sm transition-all duration-200">
                   <div className="text-2xl mr-3">👤</div>
                   <div>
-                    <div className="font-medium">My Profile</div>
-                    <div className="text-sm text-gray-500">View achievements & stats</div>
+                    <div className="font-medium text-primary">My Profile</div>
+                    <div className="text-sm text-primary/70">Account settings</div>
                   </div>
                 </Link>
               </div>

@@ -9,99 +9,35 @@ import Quiz from '@/components/Quiz';
 import FlashcardsGame from '@/components/FlashcardsGame';
 import MatchingGame from '@/components/MatchingGame';
 import XPGainAnimation from '@/components/XPGainAnimation';
-import { Course, Module, Progress } from '@/lib/types';
+import { useApp } from '@/contexts/AppContext';
+import { Module as ModuleType } from '@/lib/types';
 import { GamificationResult } from '@/lib/gamification';
 
 export default function ModulePage({ params }: { params: Promise<{ id: string; moduleId: string }> }) {
   const { id, moduleId } = use(params);
-  // For demo purposes, use mock session
-  const session = { user: { name: 'Demo User', id: '1' } };
   const router = useRouter();
-  const [course, setCourse] = useState<Course | null>(null);
-  const [module, setModule] = useState<Module | null>(null);
-  const [progress, setProgress] = useState<Progress | null>(null);
+  const { courses, progress, completeModule, updateProgress, isLoading } = useApp();
   const [timeSpent, setTimeSpent] = useState(0);
-  const [loading, setLoading] = useState(true);
   const [completing, setCompleting] = useState(false);
   const [gamificationResult, setGamificationResult] = useState<GamificationResult | null>(null);
+  
+  const course = courses.find(c => c.id === id);
+  const currentModule = course?.modules.find(m => m.id === moduleId);
+  const moduleProgress = progress.find(p => p.courseId === id && p.moduleId === moduleId);
 
+  // Initialize time spent from existing progress
   useEffect(() => {
-    if (false) {
-      router.push('/');
-      return;
+    if (moduleProgress?.timeSpentSeconds) {
+      setTimeSpent(moduleProgress.timeSpentSeconds);
     }
-
-    if (true) {
-      fetchModuleData();
-    }
-  }, [status, id, moduleId, router]);
-
-  const fetchModuleData = async () => {
-    try {
-      // Fetch course
-      const courseResponse = await fetch(`/api/courses/${id}`);
-      const courseData = await courseResponse.json();
-      setCourse(courseData);
-
-      // Find module
-      const moduleData = courseData.modules.find((m: Module) => m.id === moduleId);
-      if (!moduleData) {
-        throw new Error('Module not found');
-      }
-      setModule(moduleData);
-
-      // Fetch progress
-      if (session?.user?.id) {
-        const progressResponse = await fetch(`/api/user/progress?userId=${session.user.id}`);
-        const progressData = await progressResponse.json();
-        const moduleProgress = progressData.progress.find(
-          (p: Progress) => p.courseId === id && p.moduleId === moduleId
-        );
-        setProgress(moduleProgress || null);
-        setTimeSpent(moduleProgress?.timeSpentSeconds || 0);
-      }
-    } catch (error) {
-      console.error('Failed to fetch module data:', error);
-      router.push(`/courses/${id}`);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const updateProgress = async (completed: boolean = false, score?: number) => {
-    if (!session?.user?.id) return;
-
-    try {
-      const response = await fetch(`/api/progress/${moduleId}`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          userId: session.user.id,
-          courseId: id,
-          timeSpentSeconds: timeSpent,
-          completed,
-          ...(score !== undefined && { score })
-        }),
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        setProgress(data.progress);
-        
-        if (data.gamification) {
-          setGamificationResult(data.gamification);
-        }
-      }
-    } catch (error) {
-      console.error('Failed to update progress:', error);
-    }
-  };
+  }, [moduleProgress?.timeSpentSeconds]);
 
   const handleCompleteModule = async () => {
     setCompleting(true);
-    await updateProgress(true);
+    const result = await completeModule(id, moduleId);
+    if (result) {
+      setGamificationResult(result);
+    }
     setCompleting(false);
   };
 
@@ -109,27 +45,17 @@ export default function ModulePage({ params }: { params: Promise<{ id: string; m
     setCompleting(true);
     
     try {
-      const response = await fetch('/api/quiz/submit', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          userId: session?.user?.id,
-          courseId: id,
-          moduleId: moduleId,
-          answers,
-          timeSpent: timeSpent + quizTimeSpent
-        }),
+      // Update progress with quiz completion
+      updateProgress(id, moduleId, { 
+        timeSpentSeconds: timeSpent + quizTimeSpent,
+        completed: true,
+        score: score
       });
-
-      if (response.ok) {
-        const data = await response.json();
-        setProgress(data.progress);
-        
-        if (data.gamification) {
-          setGamificationResult(data.gamification);
-        }
+      
+      // Award XP for quiz completion
+      const result = await completeModule(id, moduleId);
+      if (result) {
+        setGamificationResult(result);
       }
     } catch (error) {
       console.error('Failed to submit quiz:', error);
@@ -142,55 +68,28 @@ export default function ModulePage({ params }: { params: Promise<{ id: string; m
     setCompleting(true);
     
     try {
-      // First, submit the game score
-      const gameResponse = await fetch('/api/games/score', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          userId: session?.user?.id,
-          courseId: id,
-          moduleId: moduleId,
-          gameId: module?.game?.id,
-          score,
-          timeSpent: gameTimeSpent
-        }),
-      });
-
-      // Then, mark the module as completed
       const totalTime = timeSpent + gameTimeSpent;
-      const progressResponse = await fetch(`/api/progress/${moduleId}`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          userId: session?.user?.id,
-          courseId: id,
-          timeSpentSeconds: totalTime,
-          completed: true
-        }),
+      
+      // Update progress with game completion
+      updateProgress(id, moduleId, { 
+        timeSpentSeconds: totalTime,
+        completed: true,
+        score: score
       });
-
-      if (gameResponse.ok && progressResponse.ok) {
-        const gameData = await gameResponse.json();
-        const progressData = await progressResponse.json();
-        
-        setProgress(progressData.progress);
-        
-        // Combine gamification results
-        if (gameData.gamification || progressData.gamification) {
-          setGamificationResult(gameData.gamification || progressData.gamification);
-        }
-
-        // Auto-redirect back to course page after showing results
-        setTimeout(() => {
-          router.push(`/courses/${id}`);
-        }, 3000);
+      
+      // Award XP for game completion
+      const result = await completeModule(id, moduleId);
+      if (result) {
+        setGamificationResult(result);
       }
+
+      // Auto-redirect back to course page after showing results
+      setTimeout(() => {
+        router.push(`/courses/${id}`);
+      }, 3000);
     } catch (error) {
       console.error('Failed to submit game completion:', error);
+    } finally {
       setCompleting(false);
     }
   };
@@ -200,7 +99,7 @@ export default function ModulePage({ params }: { params: Promise<{ id: string; m
     
     // Auto-save every 15 seconds
     if (seconds % 15 === 0 && seconds > 0) {
-      await updateProgress();
+      updateProgress(id, moduleId, { timeSpentSeconds: seconds });
     }
   };
 
@@ -217,15 +116,16 @@ export default function ModulePage({ params }: { params: Promise<{ id: string; m
   };
 
   const renderModuleContent = () => {
-    if (!module) return null;
+    if (!currentModule) return null;
 
-    switch (module.type) {
+    switch (currentModule.type) {
       case 'doc':
         return (
-          <div className="prose max-w-none">
+          <div className={`prose max-w-none ${isVideoEditingCourse ? 'prose-invert' : ''}`}>
             <div 
+              className={isVideoEditingCourse ? 'text-white' : 'text-gray-900'}
               dangerouslySetInnerHTML={{ 
-                __html: module.markdown?.replace(/\n/g, '<br>') || 'No content available' 
+                __html: currentModule.markdown?.replace(/\n/g, '<br>') || 'No content available' 
               }} 
             />
           </div>
@@ -235,8 +135,8 @@ export default function ModulePage({ params }: { params: Promise<{ id: string; m
         return (
           <div className="aspect-video">
             <iframe
-              src={module.contentUrl}
-              title={module.title}
+              src={currentModule.contentUrl}
+              title={currentModule.title}
               className="w-full h-full rounded-lg"
               frameBorder="0"
               allowFullScreen
@@ -245,30 +145,30 @@ export default function ModulePage({ params }: { params: Promise<{ id: string; m
         );
       
       case 'quiz':
-        if (!module.quiz) return <div>Quiz not found</div>;
+        if (!currentModule.quiz) return <div>Quiz not found</div>;
         return (
           <Quiz 
-            quiz={module.quiz} 
+            quiz={currentModule.quiz} 
             onComplete={handleQuizComplete}
           />
         );
       
       case 'game':
-        if (!module.game) return <div>Game not found</div>;
+        if (!currentModule.game) return <div>Game not found</div>;
         
-        if (module.game.type === 'flashcards' && 'cards' in module.game.data) {
+        if (currentModule.game.type === 'flashcards' && 'cards' in currentModule.game.data) {
           return (
             <FlashcardsGame
-              cards={module.game.data.cards}
-              timeLimit={module.timeEstimateMinutes * 60}
+              cards={currentModule.game.data.cards}
+              timeLimit={currentModule.timeEstimateMinutes * 60}
               onComplete={handleGameComplete}
             />
           );
-        } else if (module.game.type === 'matching' && 'pairs' in module.game.data) {
+        } else if (currentModule.game.type === 'matching' && 'pairs' in currentModule.game.data) {
           return (
             <MatchingGame
-              pairs={module.game.data.pairs}
-              timeLimit={module.timeEstimateMinutes * 60}
+              pairs={currentModule.game.data.pairs}
+              timeLimit={currentModule.timeEstimateMinutes * 60}
               onComplete={handleGameComplete}
             />
           );
@@ -276,18 +176,18 @@ export default function ModulePage({ params }: { params: Promise<{ id: string; m
           return (
             <div className="text-center py-12">
               <div className="text-4xl mb-4">🎮</div>
-              <h3 className="text-xl font-bold text-primary mb-4">{module.title}</h3>
-              <p className="text-gray-600 mb-6">Game type &apos;{module.game.type}&apos; not yet implemented.</p>
+              <h3 className={`text-xl font-bold mb-4 ${isVideoEditingCourse ? 'text-white' : 'text-primary'}`}>{currentModule.title}</h3>
+              <p className={`mb-6 ${isVideoEditingCourse ? 'text-gray-300' : 'text-gray-600'}`}>Game type &apos;{currentModule.game.type}&apos; not yet implemented.</p>
             </div>
           );
         }
       
       default:
-        return <div>Unknown module type</div>;
+        return <div className={isVideoEditingCourse ? 'text-white' : 'text-gray-900'}>Unknown module type</div>;
     }
   };
 
-  if (false || loading) {
+  if (isLoading) {
     return (
       <div>
         <Header />
@@ -298,38 +198,61 @@ export default function ModulePage({ params }: { params: Promise<{ id: string; m
     );
   }
 
-  if (false || !course || !module) {
-    return null;
+  if (!course || !currentModule) {
+    return (
+      <div>
+        <Header />
+        <div className="min-h-screen flex items-center justify-center">
+          <div className="text-xl">Module not found</div>
+        </div>
+      </div>
+    );
   }
 
-  const isCompleted = progress?.completed || false;
+  const isCompleted = moduleProgress?.completed || false;
   const nextModuleUrl = getNextModuleUrl();
 
+  // Special styling for Video Editing course
+  const isVideoEditingCourse = id === '6';
+  const bgClass = isVideoEditingCourse ? 'bg-black text-white' : 'bg-gray-50';
+
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className={`min-h-screen ${bgClass}`}>
       <Header />
       
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Module Header */}
-        <div className="card mb-8">
+        <div className={`${isVideoEditingCourse ? 'bg-gray-900 text-white border-gray-700' : ''} card mb-8`}>
           <div className="flex items-center justify-between mb-4">
             <div>
               <Link 
                 href={`/courses/${id}`} 
-                className="text-sm text-gray-500 hover:text-primary mb-2 inline-block"
+                className={`text-sm mb-2 inline-block transition-colors ${
+                  isVideoEditingCourse 
+                    ? 'text-gray-300 hover:text-white' 
+                    : 'text-gray-500 hover:text-primary'
+                }`}
               >
                 ← Back to {course.title}
               </Link>
-              <h1 className="text-2xl font-bold text-primary">{module.title}</h1>
-              <div className="flex items-center space-x-4 text-sm text-gray-500 mt-2">
-                <span>{module.type.toUpperCase()}</span>
-                <span>{module.timeEstimateMinutes} min estimated</span>
-                {isCompleted && <span className="text-green-600 font-medium">✓ Completed</span>}
+              <h1 className={`text-2xl font-bold ${isVideoEditingCourse ? 'text-white' : 'text-primary'}`}>
+                {currentModule.title}
+              </h1>
+              <div className={`flex items-center space-x-4 text-sm mt-2 ${
+                isVideoEditingCourse ? 'text-gray-300' : 'text-gray-500'
+              }`}>
+                <span>{currentModule.type.toUpperCase()}</span>
+                <span>{currentModule.timeEstimateMinutes} min estimated</span>
+                {isCompleted && (
+                  <span className={`font-medium ${isVideoEditingCourse ? 'text-green-400' : 'text-green-600'}`}>
+                    ✓ Completed
+                  </span>
+                )}
               </div>
             </div>
             
             {/* Timer - only show for doc and video modules */}
-            {(module.type === 'doc' || module.type === 'video') && (
+            {(currentModule.type === 'doc' || currentModule.type === 'video') && (
               <Timer 
                 onTimeUpdate={handleTimeUpdate}
                 autoStart={!isCompleted}
@@ -339,23 +262,46 @@ export default function ModulePage({ params }: { params: Promise<{ id: string; m
         </div>
 
         {/* Module Content */}
-        <div className="card mb-8">
+        <div className={`${isVideoEditingCourse ? 'bg-gray-900 text-white border-gray-700' : ''} card mb-8`}>
+          {/* Gamified Progress Indicator for Video Editing Course */}
+          {isVideoEditingCourse && (
+            <div className="mb-6 p-4 bg-gradient-to-r from-purple-600 to-blue-600 rounded-lg">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-sm font-medium">Module Progress</span>
+                <span className="text-sm text-purple-200">{isCompleted ? '100%' : '50%'}</span>
+              </div>
+              <div className="w-full bg-purple-900 rounded-full h-3">
+                <div 
+                  className="bg-gradient-to-r from-yellow-400 to-orange-500 h-3 rounded-full transition-all duration-500"
+                  style={{ width: isCompleted ? '100%' : '50%' }}
+                ></div>
+              </div>
+              {!isCompleted && (
+                <div className="flex items-center mt-3 text-yellow-300">
+                  <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                  </svg>
+                  <span className="text-sm">Complete to earn XP and unlock the next module!</span>
+                </div>
+              )}
+            </div>
+          )}
           {renderModuleContent()}
         </div>
 
         {/* Navigation */}
         <div className="flex justify-between items-center">
           <div>
-            {progress?.timeSpentSeconds && (
-              <p className="text-sm text-gray-500">
-                Time spent: {Math.floor(progress.timeSpentSeconds / 60)}m {progress.timeSpentSeconds % 60}s
+            {moduleProgress?.timeSpentSeconds && (
+              <p className={`text-sm ${isVideoEditingCourse ? 'text-gray-300' : 'text-gray-500'}`}>
+                Time spent: {Math.floor(moduleProgress.timeSpentSeconds / 60)}m {moduleProgress.timeSpentSeconds % 60}s
               </p>
             )}
           </div>
           
           <div className="flex space-x-4">
             {/* Mark Complete Button - only for doc and video modules */}
-            {(module.type === 'doc' || module.type === 'video') && !isCompleted && (
+            {(currentModule.type === 'doc' || currentModule.type === 'video') && !isCompleted && (
               <button
                 onClick={handleCompleteModule}
                 disabled={completing}

@@ -19,9 +19,11 @@ export default function RoadmapsPage() {
   const session = { user: { name: 'Demo User', id: '1' } }; const status = 'authenticated';
   const router = useRouter();
   const [roadmaps, setRoadmaps] = useState<EnhancedRoadmap[]>([]);
+  const [filteredRoadmaps, setFilteredRoadmaps] = useState<EnhancedRoadmap[]>([]);
   const [courses, setCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
   const [gamificationResult, setGamificationResult] = useState<GamificationResult | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     if (false) {
@@ -42,6 +44,7 @@ export default function RoadmapsPage() {
       const roadmapsResponse = await fetch(`/api/roadmaps?userId=${session?.user?.id}`);
       const roadmapsData = await roadmapsResponse.json();
       setRoadmaps(roadmapsData);
+      setFilteredRoadmaps(roadmapsData);
 
       // Fetch courses for course recommendations
       const coursesResponse = await fetch('/api/courses');
@@ -123,6 +126,23 @@ export default function RoadmapsPage() {
     return Math.round((roadmap.completedSteps.length / roadmap.steps.length) * 100);
   };
 
+  const handleSearch = (query: string) => {
+    setSearchQuery(query);
+    if (query.trim() === '') {
+      setFilteredRoadmaps(roadmaps);
+    } else {
+      const filtered = roadmaps.filter(roadmap =>
+        roadmap.title.toLowerCase().includes(query.toLowerCase()) ||
+        roadmap.description.toLowerCase().includes(query.toLowerCase()) ||
+        roadmap.steps.some(step => 
+          step.title.toLowerCase().includes(query.toLowerCase()) ||
+          step.description.toLowerCase().includes(query.toLowerCase())
+        )
+      );
+      setFilteredRoadmaps(filtered);
+    }
+  };
+
   if (false || loading) {
     return (
       <div>
@@ -145,15 +165,35 @@ export default function RoadmapsPage() {
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-primary mb-2">Career Roadmaps</h1>
-          <p className="text-gray-600">
-            Follow structured learning paths to achieve your career goals. Track your progress and unlock new skills.
-          </p>
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <h1 className="text-3xl font-bold text-primary mb-2">Career Roadmaps</h1>
+              <p className="text-gray-600">
+                Follow structured learning paths to achieve your career goals. Track your progress and unlock new skills.
+              </p>
+            </div>
+          </div>
+          
+          {/* Search Bar */}
+          <div className="relative max-w-md">
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+            </div>
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => handleSearch(e.target.value)}
+              placeholder="Search roadmaps..."
+              className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent"
+            />
+          </div>
         </div>
 
         {/* Roadmaps */}
         <div className="space-y-8">
-          {roadmaps.map((roadmap) => (
+          {filteredRoadmaps.map((roadmap) => (
             <div key={roadmap.id} className="card">
               {/* Roadmap Header */}
               <div className="flex items-start justify-between mb-6">
@@ -297,7 +337,14 @@ export default function RoadmapsPage() {
         </div>
 
         {/* Empty State */}
-        {roadmaps.length === 0 && (
+        {filteredRoadmaps.length === 0 && searchQuery && (
+          <div className="text-center py-12">
+            <div className="text-4xl mb-4">🔍</div>
+            <h3 className="text-xl font-medium text-gray-900 mb-2">No roadmaps found</h3>
+            <p className="text-gray-500">No roadmaps match your search criteria. Try a different search term.</p>
+          </div>
+        )}
+        {roadmaps.length === 0 && !searchQuery && (
           <div className="text-center py-12">
             <div className="text-4xl mb-4">🗺️</div>
             <h3 className="text-xl font-medium text-gray-900 mb-2">No roadmaps available</h3>

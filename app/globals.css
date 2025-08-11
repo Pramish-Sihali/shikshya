@@ -5,11 +5,13 @@
   --foreground: #171717;
   --custom-blue: #122849;
   --custom-blue-dark: #0d1a32;
+  --custom-blue-secondary: #1A5490;
   --custom-blue-light: #1a3a5f;
   --custom-blue-lighter: #2d4d78;
-  --gold: #d4af37;
-  --gold-light: #e6c659;
-  --gold-dark: #b8941f;
+  --accent: #C2E8FF;
+  --accent-light: #d1eeff;
+  --accent-dark: #a3d5f0;
+  --danger: #FF4A4A;
 }
 
 @theme inline {
@@ -22,9 +24,11 @@
   --color-primary-dark: var(--custom-blue-dark);
   --color-primary-light: var(--custom-blue-light);
   --color-primary-lighter: var(--custom-blue-lighter);
-  --color-accent: var(--gold);
-  --color-accent-light: var(--gold-light);
-  --color-accent-dark: var(--gold-dark);
+  --color-secondary: var(--custom-blue-secondary);
+  --color-accent: var(--accent);
+  --color-accent-light: var(--accent-light);
+  --color-accent-dark: var(--accent-dark);
+  --color-danger: var(--danger);
   
   /* Semantic colors */
   --color-success: #10b981;

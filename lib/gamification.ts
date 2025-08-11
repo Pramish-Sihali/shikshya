@@ -51,11 +51,60 @@ export class GamificationEngine {
       condition: (user: User) => user.enrolledCourses.length >= 1
     },
     {
+      id: 'course-graduate',
+      name: 'Course Graduate',
+      description: 'Completed your first course',
+      icon: '🎓',
+      condition: (user: User) => user.xp >= 150 // Typical course completion XP
+    },
+    {
+      id: 'video-editor',
+      name: 'Video Editor',
+      description: 'Mastered Video Editing course',
+      icon: '🎬',
+      condition: (user: User) => user.xp >= 400 // Video editing course XP
+    },
+    {
+      id: 'react-developer',
+      name: 'React Developer',
+      description: 'Completed React Fundamentals',
+      icon: '⚛️',
+      condition: (user: User) => user.xp >= 200
+    },
+    {
+      id: 'js-ninja',
+      name: 'JavaScript Ninja',
+      description: 'Mastered JavaScript Essentials',
+      icon: '🥷',
+      condition: (user: User) => user.xp >= 180
+    },
+    {
+      id: '3-day-streak',
+      name: 'Learning Habit',
+      description: 'Maintained a 3-day learning streak',
+      icon: '🔥',
+      condition: (user: User) => user.streak.currentStreak >= 3
+    },
+    {
       id: '7-day-streak',
       name: 'Week Warrior',
       description: 'Maintained a 7-day learning streak',
       icon: '🔥',
       condition: (user: User) => user.streak.currentStreak >= 7
+    },
+    {
+      id: '30-day-streak',
+      name: 'Month Master',
+      description: 'Maintained a 30-day learning streak',
+      icon: '🏆',
+      condition: (user: User) => user.streak.currentStreak >= 30
+    },
+    {
+      id: '100-xp',
+      name: 'Getting Started',
+      description: 'Earned your first 100 XP',
+      icon: '✨',
+      condition: (user: User) => user.xp >= 100
     },
     {
       id: '500-xp',
@@ -65,25 +114,25 @@ export class GamificationEngine {
       condition: (user: User) => user.xp >= 500
     },
     {
+      id: '1000-xp',
+      name: 'XP Champion',
+      description: 'Earned 1000 XP points',
+      icon: '🏅',
+      condition: (user: User) => user.xp >= 1000
+    },
+    {
       id: 'quiz-master',
       name: 'Quiz Master',
-      description: 'Passed 10 quizzes',
+      description: 'Excel at taking quizzes',
       icon: '🧠',
-      condition: (user: User) => {
-        // This would need to be tracked in progress data
-        // For now, we'll use a simple XP threshold
-        return user.xp >= 300;
-      }
+      condition: (user: User) => user.xp >= 300
     },
     {
       id: 'game-player',
       name: 'Game Player',
-      description: 'Played your first game',
+      description: 'Completed your first game',
       icon: '🎮',
-      condition: (user: User) => {
-        // This would need game play tracking
-        return user.xp >= 50;
-      }
+      condition: (user: User) => user.xp >= 75
     },
     {
       id: 'roadmap-explorer',
@@ -91,6 +140,20 @@ export class GamificationEngine {
       description: 'Completed a roadmap milestone',
       icon: '🗺️',
       condition: (user: User) => user.xp >= 100
+    },
+    {
+      id: 'multi-course',
+      name: 'Polymath',
+      description: 'Enrolled in multiple courses',
+      icon: '🎯',
+      condition: (user: User) => user.enrolledCourses.length >= 3
+    },
+    {
+      id: 'level-5',
+      name: 'Level 5 Hero',
+      description: 'Reached Level 5',
+      icon: '🦸',
+      condition: (user: User) => user.level >= 5
     }
   ];
 

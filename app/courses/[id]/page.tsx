@@ -1,58 +1,23 @@
 'use client';
 
-import { useState, useEffect, use } from 'react';
+import { use } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Header from '@/components/Header';
 import ProgressBar from '@/components/ProgressBar';
-import { Course, Progress, Module } from '@/lib/types';
+import { useApp } from '@/contexts/AppContext';
+import { Module } from '@/lib/types';
 
 export default function CoursePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
-  // For demo purposes, use mock session
-  const session = { user: { name: 'Demo User', id: '1' } };
   const router = useRouter();
-  const [course, setCourse] = useState<Course | null>(null);
-  const [progress, setProgress] = useState<Progress[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    if (false) {
-      router.push('/');
-      return;
-    }
-
-    if (true) {
-      fetchCourseData();
-    }
-  }, [status, id, router]);
-
-  const fetchCourseData = async () => {
-    try {
-      // Fetch course details
-      const courseResponse = await fetch(`/api/courses/${id}`);
-      if (!courseResponse.ok) {
-        throw new Error('Course not found');
-      }
-      const courseData = await courseResponse.json();
-      setCourse(courseData);
-
-      // Fetch user progress
-      if (session?.user?.id) {
-        const progressResponse = await fetch(`/api/user/progress?userId=${session.user.id}`);
-        const progressData = await progressResponse.json();
-        setProgress(progressData.progress.filter((p: Progress) => p.courseId === id));
-      }
-    } catch (error) {
-      console.error('Failed to fetch course data:', error);
-      router.push('/courses');
-    } finally {
-      setLoading(false);
-    }
-  };
+  const { user, courses, progress, isLoading } = useApp();
+  
+  const course = courses.find(c => c.id === id);
+  const courseProgress = progress.filter(p => p.courseId === id);
 
   const getModuleProgress = (moduleId: string) => {
-    return progress.find(p => p.moduleId === moduleId);
+    return courseProgress.find(p => p.moduleId === moduleId);
   };
 
   const isModuleCompleted = (moduleId: string) => {
@@ -78,7 +43,7 @@ export default function CoursePage({ params }: { params: Promise<{ id: string }>
   };
 
   const getTotalTimeSpent = () => {
-    return progress.reduce((total, p) => total + (p.timeSpentSeconds || 0), 0);
+    return courseProgress.reduce((total, p) => total + (p.timeSpentSeconds || 0), 0);
   };
 
   const formatTime = (seconds: number) => {
@@ -111,7 +76,7 @@ export default function CoursePage({ params }: { params: Promise<{ id: string }>
     }
   };
 
-  if (false || loading) {
+  if (isLoading) {
     return (
       <div>
         <Header />
@@ -122,27 +87,42 @@ export default function CoursePage({ params }: { params: Promise<{ id: string }>
     );
   }
 
-  if (false || !course) {
-    return null;
+  if (!course) {
+    return (
+      <div>
+        <Header />
+        <div className="min-h-screen flex items-center justify-center">
+          <div className="text-xl">Course not found</div>
+        </div>
+      </div>
+    );
   }
 
+  // Special styling for Video Editing course
+  const isVideoEditingCourse = id === '6';
+  const bgClass = isVideoEditingCourse ? 'bg-black text-white' : 'bg-gray-50';
+
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className={`min-h-screen ${bgClass}`}>
       <Header />
       
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Course Header */}
-        <div className="card mb-8">
+        <div className={`${isVideoEditingCourse ? 'bg-gradient-to-br from-purple-900 to-gray-900 text-white border-gray-700' : ''} card mb-8`}>
           <div className="flex items-start justify-between mb-6">
             <div>
-              <Link href="/courses" className="text-sm text-gray-500 hover:text-primary mb-2 inline-block">
+              <Link href="/courses" className={`text-sm ${isVideoEditingCourse ? 'text-purple-300 hover:text-white' : 'text-gray-500 hover:text-primary'} mb-2 inline-block`}>
                 ← Back to Courses
               </Link>
-              <h1 className="text-3xl font-bold text-primary mb-2">{course.title}</h1>
-              <p className="text-gray-600 mb-4">{course.description}</p>
+              <h1 className={`text-3xl font-bold mb-2 ${isVideoEditingCourse ? 'text-white' : 'text-primary'}`}>
+                {course.title}
+              </h1>
+              <p className={`mb-4 ${isVideoEditingCourse ? 'text-purple-200' : 'text-gray-600'}`}>
+                {course.description}
+              </p>
               
               {/* Course Stats */}
-              <div className="flex flex-wrap gap-6 text-sm text-gray-500">
+              <div className={`flex flex-wrap gap-6 text-sm ${isVideoEditingCourse ? 'text-purple-300' : 'text-gray-500'}`}>
                 <span>{course.modules.length} modules</span>
                 <span>{course.modules.reduce((acc, mod) => acc + mod.timeEstimateMinutes, 0)} min estimated</span>
                 <span>{formatTime(getTotalTimeSpent())} completed</span>
@@ -199,7 +179,11 @@ export default function CoursePage({ params }: { params: Promise<{ id: string }>
             return (
               <div 
                 key={module.id} 
-                className={`card ${!isUnlocked ? 'opacity-60' : ''} ${isCompleted ? 'bg-green-50 border-green-200' : ''}`}
+                className={`card ${!isUnlocked ? 'opacity-60' : ''} ${
+                  isCompleted ? 
+                    (isVideoEditingCourse ? 'bg-gradient-to-r from-green-800 to-green-900 border-green-600' : 'bg-green-50 border-green-200') : 
+                    (isVideoEditingCourse ? 'bg-gray-800 border-gray-600 text-white' : '')
+                }`}
               >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-4">
@@ -223,12 +207,22 @@ export default function CoursePage({ params }: { params: Promise<{ id: string }>
                     {/* Module Info */}
                     <div>
                       <div className="flex items-center space-x-2 mb-1">
-                        <h3 className="font-semibold text-gray-900">{module.title}</h3>
-                        <span className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-gray-100 text-gray-800">
+                        <h3 className={`font-semibold ${
+                          isVideoEditingCourse ? 'text-white' : 'text-gray-900'
+                        }`}>
+                          {module.title}
+                        </h3>
+                        <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs ${
+                          isVideoEditingCourse 
+                            ? 'bg-gray-700 text-gray-200' 
+                            : 'bg-gray-100 text-gray-800'
+                        }`}>
                           {getModuleTypeLabel(module.type)}
                         </span>
                       </div>
-                      <div className="text-sm text-gray-500 space-x-4">
+                      <div className={`text-sm space-x-4 ${
+                        isVideoEditingCourse ? 'text-gray-300' : 'text-gray-500'
+                      }`}>
                         <span>{module.timeEstimateMinutes} min</span>
                         {moduleProgress?.timeSpentSeconds && (
                           <span>Spent: {formatTime(moduleProgress.timeSpentSeconds)}</span>
@@ -263,14 +257,49 @@ export default function CoursePage({ params }: { params: Promise<{ id: string }>
 
         {/* Course Completion */}
         {getCourseProgressPercent() === 100 && (
-          <div className="card bg-gradient-to-r from-green-50 to-blue-50 border-green-200 mt-8">
+          <div className={`card ${isVideoEditingCourse ? 'bg-gradient-to-r from-purple-800 to-blue-900 text-white border-purple-600' : 'bg-gradient-to-r from-green-50 to-blue-50 border-green-200'} mt-8`}>
             <div className="text-center">
-              <div className="text-4xl mb-4">🎉</div>
-              <h2 className="text-2xl font-bold text-primary mb-2">Congratulations!</h2>
-              <p className="text-gray-600 mb-4">You&apos;ve completed all modules in this course!</p>
-              <Link href="/courses" className="btn-primary">
-                Explore More Courses
-              </Link>
+              <div className="text-6xl mb-6">🎉</div>
+              <h2 className="text-3xl font-bold mb-4">{isVideoEditingCourse ? 'Video Editing Mastery Unlocked!' : 'Congratulations!'}</h2>
+              <p className={`text-lg mb-6 ${isVideoEditingCourse ? 'text-purple-200' : 'text-gray-600'}`}>
+                {isVideoEditingCourse 
+                  ? "You've mastered the art of video editing! Your creative journey has leveled up significantly."
+                  : "You've completed all modules in this course!"
+                }
+              </p>
+              
+              {/* Achievement Stats */}
+              <div className={`${isVideoEditingCourse ? 'bg-purple-900/50' : 'bg-white'} rounded-lg p-6 mb-6 inline-block`}>
+                <div className="grid grid-cols-3 gap-6 text-center">
+                  <div>
+                    <div className={`text-2xl font-bold ${isVideoEditingCourse ? 'text-yellow-400' : 'text-primary'}`}>
+                      {course.modules.length}
+                    </div>
+                    <div className={`text-sm ${isVideoEditingCourse ? 'text-purple-300' : 'text-gray-500'}`}>Modules Completed</div>
+                  </div>
+                  <div>
+                    <div className={`text-2xl font-bold ${isVideoEditingCourse ? 'text-yellow-400' : 'text-primary'}`}>
+                      {course.modules.reduce((acc, mod) => acc + (mod.quiz?.xpReward || mod.game?.xpReward || 15), 0)}
+                    </div>
+                    <div className={`text-sm ${isVideoEditingCourse ? 'text-purple-300' : 'text-gray-500'}`}>XP Earned</div>
+                  </div>
+                  <div>
+                    <div className={`text-2xl font-bold ${isVideoEditingCourse ? 'text-yellow-400' : 'text-primary'}`}>
+                      {formatTime(getTotalTimeSpent())}
+                    </div>
+                    <div className={`text-sm ${isVideoEditingCourse ? 'text-purple-300' : 'text-gray-500'}`}>Time Invested</div>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="flex justify-center space-x-4">
+                <Link href="/courses" className={isVideoEditingCourse ? 'btn-accent' : 'btn-primary'}>
+                  Explore More Courses
+                </Link>
+                <Link href="/stats" className={isVideoEditingCourse ? 'btn-secondary' : 'btn-secondary'}>
+                  View Your Stats
+                </Link>
+              </div>
             </div>
           </div>
         )}

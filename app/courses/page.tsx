@@ -1,61 +1,18 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 import Link from 'next/link';
 import Header from '@/components/Header';
-import { Course, User } from '@/lib/types';
+import { useApp } from '@/contexts/AppContext';
 
 export default function Courses() {
-  // For demo purposes, use mock session
-  const session = { user: { name: 'Demo User', id: '1' } };
-  const router = useRouter();
-  const [courses, setCourses] = useState<Course[]>([]);
-  const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
+  const { user, courses, enrollInCourse, isLoading } = useApp();
   const [enrolling, setEnrolling] = useState<string | null>(null);
 
-  useEffect(() => {
-    fetchData();
-  }, []);
-
-  const fetchData = async () => {
-    try {
-      // Fetch courses
-      const coursesResponse = await fetch('/api/courses');
-      const coursesData = await coursesResponse.json();
-      setCourses(coursesData);
-
-      // Fetch user data
-      const userResponse = await fetch(`/api/user/progress?userId=${session.user.id}`);
-      const userData = await userResponse.json();
-      setUser(userData.user);
-    } catch (error) {
-      console.error('Failed to fetch data:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const handleEnroll = async (courseId: string) => {
-    
     setEnrolling(courseId);
     try {
-      const response = await fetch('/api/enroll', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          userId: session.user.id,
-          courseId
-        }),
-      });
-
-      if (response.ok) {
-        // Refresh user data
-        fetchData();
-      }
+      await enrollInCourse(courseId);
     } catch (error) {
       console.error('Failed to enroll:', error);
     } finally {
@@ -67,7 +24,7 @@ export default function Courses() {
     return user?.enrolledCourses.includes(courseId) || false;
   };
 
-  if (loading) {
+  if (isLoading) {
     return (
       <div>
         <Header />
